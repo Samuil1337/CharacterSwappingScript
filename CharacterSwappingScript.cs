@@ -172,7 +172,16 @@ public class CharacterSwappingScript : Script
         swapCooldownTimer -= Game.GetDeltaTime();
     }
 
-    private static int GetDamageState(CharacterInfo charInfo)
+    private static bool IsValid(params GameObject[] objects)
+    {
+        foreach (var obj in objects)
+            if (obj == null || !obj.IsValid())
+                return false;
+
+        return true;
+    }
+
+    private static int GetDamageState(CharacterInfo charInfo, RGameRI gri)
     {
         if (charInfo.BaseId != PlayableCharacter.Batman
             || charInfo.BaseId != PlayableCharacter.Catwoman) return 0;
@@ -226,9 +235,9 @@ public class CharacterSwappingScript : Script
         var rpp = rpc.CombatPawn;
         var gi = Game.GetGameInfo();
         var wi = Game.GetWorldInfo();
+        var gri = Game.GetGameRI();
         var pData = Game.GetPersistentData();
-        if (!rpc.IsValid() || rpp == null || !rpp.IsValid()) return;
-        if (!gi.IsValid() || !wi.IsValid() || !pData.IsValid()) return;
+        if (!IsValid(rpc, rpp, gi, wi, gri, pData)) return;
         // Make sure swapping is necessary
         var charInfo = Characters[character];
         if (rpp.CharacterName == charInfo.CharacterName) return;
