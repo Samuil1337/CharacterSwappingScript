@@ -35,6 +35,9 @@ public class CharacterSwappingScript : Script
         string Skin
     )
     {
+        public const string StdSkin = "Std";
+        public const string AnimatedSkin = "Animated";
+
         /// <summary>
         /// Gets the name of the package which defines the characters animations, gadgets and moves.
         /// </summary>
@@ -48,6 +51,11 @@ public class CharacterSwappingScript : Script
         /// Gets the name of the package which contains the corresponding skin.
         /// </summary>
         public string SkinPackage => SkinIdentifier + "_SF";
+        /// <summary>
+        /// Returns a boolean indicating whether the current skin is the default skin.
+        /// This is useful when applying Damage States as only the standard skins have them.
+        /// </summary>
+        public bool IsDefaultSkin => Skin == StdSkin;
     }
 
     /// <summary>
@@ -123,31 +131,31 @@ public class CharacterSwappingScript : Script
                 BaseId: PlayableCharacter.BruceWayne,
                 CharacterName: "Bruce_Wayne",
                 Base: "Playable_BruceWayne",
-                Skin: "Std"
+                Skin: CharacterInfo.StdSkin
             ),
             [PlayableCharacter.Batman] = new CharacterInfo(
                 BaseId: PlayableCharacter.Batman,
                 CharacterName: "Batman",
                 Base: "Playable_Batman",
-                Skin: "Std"
+                Skin: CharacterInfo.StdSkin
             ),
             [PlayableCharacter.Catwoman] = new CharacterInfo(
                 BaseId: PlayableCharacter.Catwoman,
                 CharacterName: "Catwoman",
                 Base: "Playable_Catwoman",
-                Skin: "Std"
+                Skin: CharacterInfo.StdSkin
             ),
             [PlayableCharacter.Robin] = new CharacterInfo(
                 BaseId: PlayableCharacter.Robin,
                 CharacterName: "Robin",
                 Base: "Playable_Robin",
-                Skin: "Std"
+                Skin: CharacterInfo.StdSkin
             ),
             [PlayableCharacter.Nightwing] = new CharacterInfo(
                 BaseId: PlayableCharacter.Nightwing,
                 CharacterName: "Nightwing",
                 Base: "Playable_Nightwing",
-                Skin: "Std"
+                Skin: CharacterInfo.StdSkin
             ),
         };
 
