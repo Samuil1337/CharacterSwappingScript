@@ -89,4 +89,54 @@ public class CharacterSwappingScript : Script
                 Skin: "Std"
             ),
         };
+
+    private void SwapCharacter(PlayableCharacter character)
+    {
+        // Make sure swapping is safe
+        var rpc = Game.GetPlayerController();
+        var rpp = rpc.CombatPawn;
+        var wi = Game.GetWorldInfo();
+        if (!rpc.IsValid() || rpp == null || !rpp.IsValid()) return;
+        if (!wi.IsValid()) return;
+        // Make sure swapping is necessary
+        var charInfo = Characters[character];
+        if (rpp.CharacterName == charInfo.CharacterName) return;
+
+        // Load assets
+        Game.LoadPackage(charInfo.BasePackage);
+        Game.LoadPackage(charInfo.SkinPackage);
+        gi.LoadPC(charInfo.SkinIdentifier);  // TODO(Samuil1337): Update DamageLevel properly
+
+        // Switch character
+        var act = new RSeqAct_SwitchPlayerCharacter(wi)
+        {
+            CharacterName = charInfo.CharacterName,
+            PlayerStartPoint = Game.SpawnActor<PlayerStart>(rpp.Location, rpp.Rotation),
+        };
+        rpc.PrepareForPlayerSwitch();   // Resets HUD
+        act.RestartPlayer(rpc); // Performs switch of Pawn
+        rpp.Destroy();  // Removes old RPawnPlayer
+    }
+
+    public override void OnKeyDown(Keys key)
+    {
+        switch (key)
+        {
+            case Keys.F1:
+                SwapCharacter(PlayableCharacter.Batman);
+                break;
+            case Keys.F2:
+                SwapCharacter(PlayableCharacter.Catwoman);
+                break;
+            case Keys.F3:
+                SwapCharacter(PlayableCharacter.Robin);
+                break;
+            case Keys.F4:
+                SwapCharacter(PlayableCharacter.Nightwing);
+                break;
+            case Keys.F5:
+                SwapCharacter(PlayableCharacter.BruceWayne);
+                break;
+        }
+    }
 }
