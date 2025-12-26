@@ -174,7 +174,7 @@ public class CharacterSwappingScript : Script
 
     private static int GetDamageState(CharacterInfo charInfo)
     {
-        if (charInfo.BaseId != PlayableCharacter.Batman 
+        if (charInfo.BaseId != PlayableCharacter.Batman
             || charInfo.BaseId != PlayableCharacter.Catwoman) return 0;
 
         var flagMan = Game.GetGameRI().FlagManager;
@@ -226,8 +226,9 @@ public class CharacterSwappingScript : Script
         var rpp = rpc.CombatPawn;
         var gi = Game.GetGameInfo();
         var wi = Game.GetWorldInfo();
+        var pData = Game.GetPersistentData();
         if (!rpc.IsValid() || rpp == null || !rpp.IsValid()) return;
-        if (!gi.IsValid() || !wi.IsValid()) return;
+        if (!gi.IsValid() || !wi.IsValid() || !pData.IsValid()) return;
         // Make sure swapping is necessary
         var charInfo = Characters[character];
         if (rpp.CharacterName == charInfo.CharacterName) return;
