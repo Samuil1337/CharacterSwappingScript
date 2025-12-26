@@ -90,6 +90,22 @@ public class CharacterSwappingScript : Script
             ),
         };
 
+    private static int GetDamageState(CharacterInfo charInfo)
+    {
+        if (charInfo.BaseId != PlayableCharacter.Batman 
+            || charInfo.BaseId != PlayableCharacter.Catwoman) return 0;
+
+        var flagMan = Game.GetGameRI().FlagManager;
+        for (int i = 9; i >= 0; i--)
+        {
+            if (flagMan.GetGlobalFlag("BatmanDamageLevel" + i))
+            {
+                return i;
+            }
+        }
+        return 0;
+    }
+
     private void SwapCharacter(PlayableCharacter character)
     {
         // Make sure swapping is safe
@@ -105,7 +121,7 @@ public class CharacterSwappingScript : Script
         // Load assets
         Game.LoadPackage(charInfo.BasePackage);
         Game.LoadPackage(charInfo.SkinPackage);
-        gi.LoadPC(charInfo.SkinIdentifier);  // TODO(Samuil1337): Update DamageLevel properly
+        gi.LoadPC(charInfo.SkinIdentifier, GetDamageState(charInfo));  // TODO(Samuil1337): Update DamageLevel properly
 
         // Switch character
         var act = new RSeqAct_SwitchPlayerCharacter(wi)
