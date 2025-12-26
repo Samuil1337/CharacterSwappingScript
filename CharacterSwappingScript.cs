@@ -186,7 +186,7 @@ public class CharacterSwappingScript : Script
         if (charInfo.BaseId != PlayableCharacter.Batman
             || charInfo.BaseId != PlayableCharacter.Catwoman) return 0;
 
-        var flagMan = Game.GetGameRI().FlagManager;
+        var flagMan = gri.FlagManager;
         for (int i = 9; i >= 0; i--)
         {
             if (flagMan.GetGlobalFlag("BatmanDamageLevel" + i))
@@ -197,11 +197,11 @@ public class CharacterSwappingScript : Script
         return 0;
     }
 
-    private static void LoadPackages(CharacterInfo charInfo, RGameInfo gi)
+    private static void LoadPackages(CharacterInfo charInfo, RGameInfo gi, RGameRI gri)
     {
         Game.LoadPackage(charInfo.BasePackage);
         Game.LoadPackage(charInfo.SkinPackage);
-        gi.LoadPC(charInfo.SkinIdentifier, GetDamageState(charInfo));  // TODO(Samuil1337): Update DamageLevel properly
+        gi.LoadPC(charInfo.SkinIdentifier, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
     }
 
     private static void DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
@@ -246,7 +246,7 @@ public class CharacterSwappingScript : Script
         var dto = PlayerState.FromRpc(rpc, pData);
 
         // Load assets
-        LoadPackages(charInfo, gi);
+        LoadPackages(charInfo, gi, gri);
 
         DoSwitch(wi, charInfo, rpp, rpc);
 
