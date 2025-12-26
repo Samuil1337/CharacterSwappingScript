@@ -116,25 +116,15 @@ public class CharacterSwappingScript : Script
         return 0;
     }
 
-    private void SwapCharacter(PlayableCharacter character)
+    private static void LoadPackages(CharacterInfo charInfo, RGameInfo gi)
     {
-        // Make sure swapping is allowed
-        if (swapCooldownTimer > 0) return;
-        // Make sure swapping is safe
-        var rpc = Game.GetPlayerController();
-        var rpp = rpc.CombatPawn;
-        var wi = Game.GetWorldInfo();
-        if (!rpc.IsValid() || rpp == null || !rpp.IsValid()) return;
-        if (!wi.IsValid()) return;
-        // Make sure swapping is necessary
-        var charInfo = Characters[character];
-        if (rpp.CharacterName == charInfo.CharacterName) return;
-
-        // Load assets
         Game.LoadPackage(charInfo.BasePackage);
         Game.LoadPackage(charInfo.SkinPackage);
         gi.LoadPC(charInfo.SkinIdentifier, GetDamageState(charInfo));  // TODO(Samuil1337): Update DamageLevel properly
+    }
 
+    private static void DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
+    {
         // Switch character
         var act = new RSeqAct_SwitchPlayerCharacter(wi)
         {
@@ -144,6 +134,27 @@ public class CharacterSwappingScript : Script
         rpc.PrepareForPlayerSwitch();   // Resets HUD
         act.RestartPlayer(rpc); // Performs switch of Pawn
         rpp.Destroy();  // Removes old RPawnPlayer
+    }
+
+    private void SwapCharacter(PlayableCharacter character)
+    {
+        // Make sure swapping is allowed
+        if (swapCooldownTimer > 0) return;
+        // Make sure swapping is safe
+        var rpc = Game.GetPlayerController();
+        var rpp = rpc.CombatPawn;
+        var gi = Game.GetGameInfo();
+        var wi = Game.GetWorldInfo();
+        if (!rpc.IsValid() || rpp == null || !rpp.IsValid()) return;
+        if (!gi.IsValid() || !wi.IsValid()) return;
+        // Make sure swapping is necessary
+        var charInfo = Characters[character];
+        if (rpp.CharacterName == charInfo.CharacterName) return;
+
+        // Load assets
+        LoadPackages(charInfo, gi);
+
+        DoSwitch(wi, charInfo, rpp, rpc);
 
         // Apply swapping cooldown
         swapCooldownTimer = SwapCooldown;
