@@ -151,9 +151,20 @@ public class CharacterSwappingScript : Script
             ),
         };
 
+    private const bool SpawnEffectEnabled = true;
+    private const float SpawnEffectScale = 1.0f;
+    private ParticleSystem spawnEffectTemplate;
     // The timer is scaled by seconds
     private const float SwapCooldown = 0f;  // TODO(Samuil1337): Reenable cooldown when done testing
     private float swapCooldownTimer = SwapCooldown;
+
+    public override void Main()
+    {
+        // TODO(Samuil1337): Find smaller package with the deps or create SF package
+        if (!SpawnEffectEnabled) return;
+        Game.LoadPackage("Under_C2_Ch5").AddToRoot();
+        spawnEffectTemplate = Game.FindObject<ParticleSystem>("FFX_Combat.Particles.NinjaSmokeBomb");
+    }
 
     public override void OnTick()
     {
@@ -197,6 +208,15 @@ public class CharacterSwappingScript : Script
         rpp.Destroy();  // Removes old RPawnPlayer
     }
 
+    private void PlayTransitionEffects(WorldInfo wi, RPlayerController rpc)
+    {
+        var spawnEffect = new ParticleSystemComponent(wi);
+        spawnEffect.SetTemplate(spawnEffectTemplate);
+        spawnEffect.SetScale(SpawnEffectScale);
+        rpc.CombatPawn.AttachComponent(spawnEffect);
+        spawnEffect.ActivateSystem();
+    }
+
     private void SwapCharacter(PlayableCharacter character)
     {
         // Make sure swapping is allowed
@@ -222,6 +242,8 @@ public class CharacterSwappingScript : Script
 
         // Fix inconsistencies after player switch
         dto.ApplyToRpc(rpc, pData);
+
+        if (SpawnEffectEnabled) PlayTransitionEffects(wi, rpc);
 
         // Apply swapping cooldown
         swapCooldownTimer = SwapCooldown;
