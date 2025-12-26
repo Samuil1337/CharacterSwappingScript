@@ -90,6 +90,16 @@ public class CharacterSwappingScript : Script
             ),
         };
 
+    // The timer is scaled by seconds
+    private const float SwapCooldown = 0f;  // TODO(Samuil1337): Reenable cooldown when done testing
+    private float swapCooldownTimer = SwapCooldown;
+
+    public override void OnTick()
+    {
+        // Counts down timer each tick (which only occurs during gameplay)
+        swapCooldownTimer -= Game.GetDeltaTime();
+    }
+
     private static int GetDamageState(CharacterInfo charInfo)
     {
         if (charInfo.BaseId != PlayableCharacter.Batman 
@@ -108,6 +118,8 @@ public class CharacterSwappingScript : Script
 
     private void SwapCharacter(PlayableCharacter character)
     {
+        // Make sure swapping is allowed
+        if (swapCooldownTimer > 0) return;
         // Make sure swapping is safe
         var rpc = Game.GetPlayerController();
         var rpp = rpc.CombatPawn;
@@ -132,6 +144,9 @@ public class CharacterSwappingScript : Script
         rpc.PrepareForPlayerSwitch();   // Resets HUD
         act.RestartPlayer(rpc); // Performs switch of Pawn
         rpp.Destroy();  // Removes old RPawnPlayer
+
+        // Apply swapping cooldown
+        swapCooldownTimer = SwapCooldown;
     }
 
     public override void OnKeyDown(Keys key)
