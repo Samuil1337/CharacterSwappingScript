@@ -68,7 +68,8 @@ public class CharacterSwappingScript : Script
         GameObject.FVector RppLoc, GameObject.FRotator RppRot,
         int Health,
         int BallisticArmour, int MeleeArmour,
-        int CWBallisticArmour, int CWMeleeArmour
+        int CWBallisticArmour, int CWMeleeArmour,
+        bool DetectiveVision
     )
     {
         /// <summary>
@@ -87,7 +88,8 @@ public class CharacterSwappingScript : Script
                 rpp.Location, rpp.Rotation,
                 pData.PlayerHealth,
                 pData.BallisticArmour, pData.MeleeArmour,
-                pData.CWBallisticArmour, pData.CWMeleeArmour
+                pData.CWBallisticArmour, pData.CWMeleeArmour,
+                rpc.bInvestigateMode
             );
         }
 
@@ -115,6 +117,8 @@ public class CharacterSwappingScript : Script
             pData.CWMeleeArmour = CWMeleeArmour;
             //pData.Armo
             rpp.LoadHealth();
+            // Transfer Detective Mode state
+            rpc.bInvestigateMode = DetectiveVision;
             // Transfer movement state
         }
     }
@@ -159,7 +163,7 @@ public class CharacterSwappingScript : Script
             ),
         };
 
-    private const bool SpawnEffectEnabled = true;
+    private const bool SpawnEffectEnabled = false;
     private const float SpawnEffectScale = 1.0f;
     private ParticleSystem spawnEffectTemplate;
     // The timer is scaled by seconds
