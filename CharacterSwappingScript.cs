@@ -118,7 +118,10 @@ public class CharacterSwappingScript : Script
             //pData.Armo
             rpp.LoadHealth();
             // Transfer Detective Mode state
-            rpc.bInvestigateMode = DetectiveVision;
+            if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
+            {
+                rpc.bInvestigateMode = DetectiveVision;
+            }
             // Transfer movement state
         }
     }
