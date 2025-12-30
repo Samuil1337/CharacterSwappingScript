@@ -32,7 +32,8 @@ public class CharacterSwappingScript : Script
         PlayableCharacter BaseId,
         string CharacterName,
         string Base,
-        string Skin
+        string Skin,
+        string? DlcBase = null
     )
     {
         private const string PkgSuffix = "_SF";
@@ -60,6 +61,16 @@ public class CharacterSwappingScript : Script
         /// This is useful when applying Damage States as only the standard skins have them.
         /// </summary>
         public bool IsDefaultSkin => Skin == StdSkin;
+
+        public string DlcBasePkg => (DlcBase != null)
+            ? BuildPkg(DlcBase)
+            : BasePkg;
+
+        public string DlcSkinId => (DlcBase != null && IsDefaultSkin)
+            ? BuildId(DlcBase, Skin)
+            : SkinId;
+
+        public string DlcSkinPkg => BuildPkg(DlcSkinId);
     }
 
     /// <summary>
@@ -160,6 +171,7 @@ public class CharacterSwappingScript : Script
                 BaseId: PlayableCharacter.Robin,
                 CharacterName: "Robin",
                 Base: "Playable_Robin",
+                DlcBase: "Playable_RobinStoryDLC",
                 Skin: CharacterInfo.StdSkin
             ),
             [PlayableCharacter.Nightwing] = new CharacterInfo(
@@ -218,9 +230,12 @@ public class CharacterSwappingScript : Script
 
     private static void LoadPackages(CharacterInfo charInfo, RGameInfo gi, RGameRI gri)
     {
-        Game.LoadPackage(charInfo.BasePkg);
-        Game.LoadPackage(charInfo.SkinPkg);
-        gi.LoadPC(charInfo.SkinId, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
+        var basePkg = !gi.bStoryDLC ? charInfo.BasePkg : charInfo.DlcBasePkg;
+        var skinPkg = !gi.bStoryDLC ? charInfo.SkinPkg : charInfo.DlcSkinPkg;
+        var skinId = !gi.bStoryDLC ? charInfo.SkinId : charInfo.DlcSkinId;
+        Game.LoadPackage(basePkg);
+        Game.LoadPackage(skinPkg);
+        gi.LoadPC(skinId, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
     }
 
     private static void DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
