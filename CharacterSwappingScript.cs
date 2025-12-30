@@ -35,22 +35,26 @@ public class CharacterSwappingScript : Script
         string Skin
     )
     {
+        private const string PkgSuffix = "_SF";
         public const string StdSkin = "Std";
         public const string AnimatedSkin = "Animated";
+
+        private static string BuildPkg(string name) => name + PkgSuffix;
+        private static string BuildId(string prefix, string name) => prefix + "_" + name;
 
         /// <summary>
         /// Gets the name of the package which defines the characters animations, gadgets and moves.
         /// </summary>
-        public string BasePackage => Base + "_SF";
+        public string BasePkg => BuildPkg(Base);
         /// <summary>
         /// Gets the unique identifier for the skin, used by <see cref="RGameInfo.LoadPC(FName, int)"/>
         /// to create the desired character with the proper skin.
         /// </summary>
-        public string SkinIdentifier => Base + "_" + Skin;
+        public string SkinId => BuildId(Base, Skin);
         /// <summary>
         /// Gets the name of the package which contains the corresponding skin.
         /// </summary>
-        public string SkinPackage => SkinIdentifier + "_SF";
+        public string SkinPkg => BuildPkg(SkinId);
         /// <summary>
         /// Returns a boolean indicating whether the current skin is the default skin.
         /// This is useful when applying Damage States as only the standard skins have them.
@@ -214,9 +218,9 @@ public class CharacterSwappingScript : Script
 
     private static void LoadPackages(CharacterInfo charInfo, RGameInfo gi, RGameRI gri)
     {
-        Game.LoadPackage(charInfo.BasePackage);
-        Game.LoadPackage(charInfo.SkinPackage);
-        gi.LoadPC(charInfo.SkinIdentifier, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
+        Game.LoadPackage(charInfo.BasePkg);
+        Game.LoadPackage(charInfo.SkinPkg);
+        gi.LoadPC(charInfo.SkinId, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
     }
 
     private static void DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
