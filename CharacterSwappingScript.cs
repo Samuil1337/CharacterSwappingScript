@@ -196,19 +196,21 @@ public class CharacterSwappingScript : Script
             ),
         };
 
-    private const bool SpawnEffectEnabled = false;
+    private static readonly bool SpawnEffectEnabled = false;    // TODO(Samuil1337): Reenable spawn effect when done testing
+    private const string SpawnEffectPkg = "Under_C2_Ch5";   // TODO(Samuil1337): Create SF package or load together with Robin
+    private const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
     private const float SpawnEffectScale = 1.0f;
-    private ParticleSystem spawnEffectTemplate;
+    private ParticleSystem? spawnEffectTemplate;
     // The timer is scaled by seconds
     private const float SwapCooldown = 0f;  // TODO(Samuil1337): Reenable cooldown when done testing
     private float swapCooldownTimer = SwapCooldown;
 
     public override void Main()
     {
-        // TODO(Samuil1337): Find smaller package with the deps or create SF package
         if (!SpawnEffectEnabled) return;
-        Game.LoadPackage("Under_C2_Ch5").AddToRoot();
-        spawnEffectTemplate = Game.FindObject<ParticleSystem>("FFX_Combat.Particles.NinjaSmokeBomb");
+        Game.LoadPackage(SpawnEffectPkg);
+        spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
+        spawnEffectTemplate.AddToRoot();
     }
 
     public override void OnTick()
