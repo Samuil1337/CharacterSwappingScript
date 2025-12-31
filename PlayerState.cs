@@ -9,12 +9,18 @@ namespace CharacterSwapping;
 /// <remarks>Use this record to snapshot and restore a player's state when switching characters.
 /// All values are intended to be consistent with the game world at the time of capture.</remarks>
 public sealed record PlayerState(
+    // Camera position
     GameObject.FVector RpcLoc, GameObject.FRotator RpcRot,
+    // Character position
     GameObject.FVector RppLoc, GameObject.FRotator RppRot,
+    // Base health for all characters
     int Health,
-    int BallisticArmour, int MeleeArmour,
-    int CWBallisticArmour, int CWMeleeArmour,
-    bool DetectiveVision
+    // Batman, Robin and Nightwing armour
+    int BArmor, int MArmor,
+    // Catwoman armour
+    int CwBArmor, int CwMArmor,
+    // Detective vision
+    bool XRay
 )
 {
     /// <summary>
@@ -29,13 +35,45 @@ public sealed record PlayerState(
     {
         var rpp = rpc.CombatPawn;
         return new PlayerState(
-            rpc.Location, rpc.Rotation,
-            rpp.Location, rpp.Rotation,
-            pData.PlayerHealth,
-            pData.BallisticArmour, pData.MeleeArmour,
-            pData.CWBallisticArmour, pData.CWMeleeArmour,
-            rpc.bInvestigateMode
+            RpcLoc: rpc.Location, RpcRot: rpc.Rotation,
+            RppLoc: rpp.Location, RppRot: rpp.Rotation,
+            Health: pData.PlayerHealth,
+            BArmor: pData.BallisticArmour, MArmor: pData.MeleeArmour,
+            CwBArmor: pData.CWBallisticArmour, CwMArmor: pData.CWMeleeArmour,
+            XRay: rpc.bInvestigateMode
         );
+    }
+
+    private void ApplyMovement(RPlayerController rpc, RPawnPlayer rpp)
+    {
+        // RSeqAct_SwitchPlayerCharacter isn't reliable in Challenge Maps,
+        // therefore, we must manually override the position
+        rpp.SetLocation(RppLoc);
+        rpp.SetRotation(RppRot);
+        // Makes sure the camera doesn't change with the character swap
+        rpc.SetLocation(RpcLoc);
+        rpc.SetRotation(RpcRot);
+    }
+
+    private void ApplyHealth(RPawnPlayer rpp, RPersistentData pData)
+    {
+        // Transfer health
+        pData.PlayerHealth = Health;
+        pData.BallisticArmour = BArmor;
+        pData.MeleeArmour = MArmor;
+        pData.CWBallisticArmour = CwBArmor;
+        pData.CWMeleeArmour = CwMArmor;
+        // Refresh HUD
+        rpp.LoadHealth();
+    }
+
+    private void ApplyDetectiveVision(RPlayerController rpc)
+    {
+        // Transfer Detective Mode state
+        if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
+        {
+            rpc.bInvestigateMode = XRay;
+        }
     }
 
     /// <summary>
@@ -47,26 +85,9 @@ public sealed record PlayerState(
     public void ApplyToRpc(RPlayerController rpc, RPersistentData pData)
     {
         var rpp = rpc.CombatPawn;
-        // RSeqAct_SwitchPlayerCharacter isn't reliable in Challenge Maps,
-        // therefore, we must manually override the position
-        rpp.SetLocation(RppLoc);
-        rpp.SetRotation(RppRot);
-        // Makes sure the camera doesn't change with the character swap
-        rpc.SetLocation(RpcLoc);
-        rpc.SetRotation(RpcRot);
-        // Transfer health
-        pData.PlayerHealth = Health;
-        pData.BallisticArmour = BallisticArmour;
-        pData.MeleeArmour = MeleeArmour;
-        pData.CWBallisticArmour = CWBallisticArmour;
-        pData.CWMeleeArmour = CWMeleeArmour;
-        //pData.Armo
-        rpp.LoadHealth();
-        // Transfer Detective Mode state
-        if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
-        {
-            rpc.bInvestigateMode = DetectiveVision;
-        }
-        // Transfer movement state
+
+        ApplyMovement(rpc, rpp);
+        ApplyHealth(rpp, pData);
+        ApplyDetectiveVision(rpc);
     }
 }
