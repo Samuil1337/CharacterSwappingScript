@@ -13,7 +13,7 @@ public class CharacterSwappingScript : Script
     /// </summary>
     /// <remarks>The dictionary contains predefined entries for all supported playable characters. The
     /// collection is immutable and cannot be modified at runtime.</remarks>
-    private static readonly IReadOnlyDictionary<PlayableCharacter, CharacterInfo> Characters =
+    public static readonly IReadOnlyDictionary<PlayableCharacter, CharacterInfo> Characters =
         new Dictionary<PlayableCharacter, CharacterInfo>
         {
             [PlayableCharacter.BruceWayne] = new CharacterInfo(

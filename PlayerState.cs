@@ -1,5 +1,6 @@
 using BmSDK;
 using BmSDK.BmGame;
+using static CharacterSwapping.CharacterSwappingScript;
 
 namespace CharacterSwapping;
 
@@ -55,16 +56,28 @@ public sealed record PlayerState(
         rpc.SetRotation(RpcRot);
     }
 
-    private void ApplyHealth(RPawnPlayer rpp, RPersistentData pData)
+    private void ApplyHealth(RPlayerController rpc, RPawnPlayer rpp, RPersistentData pData)
     {
-        // Transfer health
-        pData.PlayerHealth = Health;
+        // Transfer health in save data
         pData.BallisticArmour = BArmor;
         pData.MeleeArmour = MArmor;
         pData.CWBallisticArmour = CwBArmor;
         pData.CWMeleeArmour = CwMArmor;
+
+        // Apply health to player
+        rpp.Health = Health;
+        rpp.HealthUpdated();    // Optional, seems to do multiplayer updates
+
+        // Apply armor
+        bool isCatwoman = rpp.CharacterName == Characters[PlayableCharacter.Catwoman].CharacterName;
+        var bArmorToApply = isCatwoman ? CwBArmor : BArmor;
+        var mArmorToApply = isCatwoman ? CwMArmor : MArmor;
+        rpp.SetArmourCurrent(RPawnPlayer.EArmourType.EA_ArmourBallistic, bArmorToApply);
+        rpp.SetArmourCurrent(RPawnPlayer.EArmourType.EA_ArmourMelee, mArmorToApply);
+
         // Refresh HUD
-        rpp.LoadHealth();
+        rpc.InstantUpdateHealth();
+        rpc.ShowHealthBar(rpc.HudMovieSide);
     }
 
     private void ApplyDetectiveVision(RPlayerController rpc)
@@ -87,7 +100,7 @@ public sealed record PlayerState(
         var rpp = rpc.CombatPawn;
 
         ApplyMovement(rpc, rpp);
-        ApplyHealth(rpp, pData);
+        ApplyHealth(rpc, rpp, pData);
         ApplyDetectiveVision(rpc);
     }
 }
