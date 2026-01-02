@@ -97,14 +97,15 @@ public class CharacterSwappingScript : Script
         return 0;
     }
 
-    private static void LoadPackages(CharacterInfo charInfo, RGameInfo gi, RGameRI gri)
+    private static void LoadPackages(CharacterInfo charInfo, RGameInfo rgi, RGameRI gri)
     {
-        var basePkg = !gi.bStoryDLC ? charInfo.BasePkg : charInfo.DlcBasePkg;
-        var skinPkg = !gi.bStoryDLC ? charInfo.SkinPkg : charInfo.DlcSkinPkg;
-        var skinId = !gi.bStoryDLC ? charInfo.SkinId : charInfo.DlcSkinId;
+        bool isDlc = rgi.bStoryDLC;
+        var basePkg = isDlc ? charInfo.DlcBasePkg : charInfo.BasePkg;
+        var skinPkg = isDlc ? charInfo.DlcSkinPkg : charInfo.SkinPkg;
+        var skinId = isDlc ? charInfo.DlcSkinId : charInfo.SkinId;
         Game.LoadPackage(basePkg);
         Game.LoadPackage(skinPkg);
-        gi.LoadPC(skinId, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
+        rgi.LoadPC(skinId, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
     }
 
     private static void DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
@@ -136,11 +137,11 @@ public class CharacterSwappingScript : Script
         // Make sure swapping is safe
         var rpc = Game.GetPlayerController();
         var rpp = rpc.CombatPawn;
-        var gi = Game.GetGameInfo();
+        var rgi = Game.GetGameInfo();
         var wi = Game.GetWorldInfo();
         var gri = Game.GetGameRI();
         var pData = Game.GetPersistentData();
-        if (!IsValid(rpc, rpp, gi, wi, gri, pData)) return;
+        if (!IsValid(rpc, rpp, rgi, wi, gri, pData)) return;
         // Make sure swapping is necessary
         var charInfo = Characters[character];
         if (rpp.CharacterName == charInfo.CharacterName) return;
@@ -149,7 +150,7 @@ public class CharacterSwappingScript : Script
         var dto = PlayerState.FromRpc(rpc, pData);
 
         // Load assets
-        LoadPackages(charInfo, gi, gri);
+        LoadPackages(charInfo, rgi, gri);
 
         DoSwitch(wi, charInfo, rpp, rpc);
 
