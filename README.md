@@ -21,3 +21,25 @@ Start the modded game instance through the usual means and just press the **func
 
 ## How to configure
 All the configuration options are constants at the top of **CharacterSwappingScript.cs**, with inline documentation explaining what each variable does. Though, it is recommended to stick to the defaults for the smoothest experience.
+
+## Develoment of this mod
+<details>
+<summary>Todo to for the full release</summary>
+
+### Feature:
+- [x] Implement basic swapping mechanic
+- [x] Add proper shared health pool
+- [x] Add smoke bomb transition on switch
+- [ ] Add proper damage level support
+- [ ] Prevent infinite gadgets when switching characters
+- [ ] Transfer over movement states #3
+- [ ] *Optional: Give Nightwing the REC gun in slot 7*
+
+### Performance:
+- [ ] Load in all characters once at init and reuse assets
+- [ ] *Optional: Reduce visibility of texture streaming on switch*
+
+### Bug Fixes:
+The known bugs reside on the [issue tracker](https://github.com/Samuil1337/CharacterSwappingScript/issues).
+
+</details>
