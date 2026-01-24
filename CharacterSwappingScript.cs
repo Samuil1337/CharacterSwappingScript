@@ -81,6 +81,18 @@ public class CharacterSwappingScript : Script
         return true;
     }
 
+    private static bool IsSafeToSwitch(RPlayerController rpc)
+    {
+        if (rpc.bCinematicMode || rpc.bForceCinematicMode) return false;
+        if (rpc.ActiveCinematicMode != null) return false;
+        if (rpc.BatmanCutscene != null) return false;
+        if (rpc.IsPlayingFullScreenMovie()) return false;
+        if (rpc.IsLookInputIgnored()) return false;
+        if (rpc.IsMoveInputIgnored()) return false;
+        
+        return true;
+    }
+
     private static int GetDamageState(CharacterInfo charInfo, RGameRI gri)
     {
         if (charInfo.BaseId != PlayableCharacter.Batman
@@ -142,6 +154,7 @@ public class CharacterSwappingScript : Script
         var gri = Game.GetGameRI();
         var pData = Game.GetPersistentData();
         if (!IsValid(rpc, rpp, rgi, wi, gri, pData)) return;
+        if (!IsSafeToSwitch(rpc)) return;
         // Make sure swapping is necessary
         var charInfo = Characters[character];
         if (rpp.CharacterName == charInfo.CharacterName) return;
