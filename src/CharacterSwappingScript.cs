@@ -1,11 +1,10 @@
 using BmSDK;
 using BmSDK.BmGame;
-using BmSDK.BmScript;
 using BmSDK.Engine;
 
 namespace CharacterSwapping;
 
-[Script]
+[Script(name: "CharacterSwappingScript")]
 public class CharacterSwappingScript : Script
 {
     /// <summary>
