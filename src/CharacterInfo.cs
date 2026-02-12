@@ -1,4 +1,4 @@
-namespace CharacterSwapping;
+namespace Samuil1337.CharacterSwapping;
 
 /// <summary>
 /// Represents information about a playable character that's necessary for loading them in.

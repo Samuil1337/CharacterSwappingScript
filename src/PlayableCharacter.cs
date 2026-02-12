@@ -1,4 +1,4 @@
-namespace CharacterSwapping;
+namespace Samuil1337.CharacterSwapping;
 
 /// <summary>
 /// Specifies the available playable characters in the game.

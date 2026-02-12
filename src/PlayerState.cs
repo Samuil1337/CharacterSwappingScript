@@ -1,8 +1,8 @@
 using BmSDK;
 using BmSDK.BmGame;
-using static CharacterSwapping.CharacterSwappingScript;
+using static Samuil1337.CharacterSwapping.CharacterSwappingScript;
 
-namespace CharacterSwapping;
+namespace Samuil1337.CharacterSwapping;
 
 /// <summary>
 /// Represents an immutable Data Transfer Object of a player's state, including position, health and animations.

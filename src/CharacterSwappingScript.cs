@@ -2,7 +2,7 @@ using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
 
-namespace CharacterSwapping;
+namespace Samuil1337.CharacterSwapping;
 
 [Script(name: "CharacterSwappingScript")]
 public class CharacterSwappingScript : Script
@@ -15,32 +15,32 @@ public class CharacterSwappingScript : Script
     public static readonly IReadOnlyDictionary<PlayableCharacter, CharacterInfo> Characters =
         new Dictionary<PlayableCharacter, CharacterInfo>
         {
-            [PlayableCharacter.BruceWayne] = new CharacterInfo(
+            [PlayableCharacter.BruceWayne] = new(
                 BaseId: PlayableCharacter.BruceWayne,
                 CharacterName: "Bruce_Wayne",
                 Base: "Playable_BruceWayne",
                 Skin: CharacterInfo.StdSkin
             ),
-            [PlayableCharacter.Batman] = new CharacterInfo(
+            [PlayableCharacter.Batman] = new(
                 BaseId: PlayableCharacter.Batman,
                 CharacterName: "Batman",
                 Base: "Playable_Batman",
                 Skin: CharacterInfo.StdSkin
             ),
-            [PlayableCharacter.Catwoman] = new CharacterInfo(
+            [PlayableCharacter.Catwoman] = new(
                 BaseId: PlayableCharacter.Catwoman,
                 CharacterName: "Catwoman",
                 Base: "Playable_Catwoman",
                 Skin: CharacterInfo.StdSkin
             ),
-            [PlayableCharacter.Robin] = new CharacterInfo(
+            [PlayableCharacter.Robin] = new(
                 BaseId: PlayableCharacter.Robin,
                 CharacterName: "Robin",
                 Base: "Playable_Robin",
                 DlcBase: "Playable_RobinStoryDLC",
                 Skin: CharacterInfo.StdSkin
             ),
-            [PlayableCharacter.Nightwing] = new CharacterInfo(
+            [PlayableCharacter.Nightwing] = new(
                 BaseId: PlayableCharacter.Nightwing,
                 CharacterName: "Nightwing",
                 Base: "Playable_Nightwing",
