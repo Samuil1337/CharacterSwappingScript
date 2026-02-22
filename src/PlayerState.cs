@@ -1,5 +1,6 @@
 using BmSDK;
 using BmSDK.BmGame;
+using System.Numerics;
 using static Samuil1337.CharacterSwapping.CharacterSwappingScript;
 
 namespace Samuil1337.CharacterSwapping;
@@ -11,9 +12,9 @@ namespace Samuil1337.CharacterSwapping;
 /// All values are intended to be consistent with the game world at the time of capture.</remarks>
 sealed record PlayerState(
     // Camera position
-    GameObject.FVector RpcLoc, GameObject.FRotator RpcRot,
+    Vector3 RpcLoc, Rotator RpcRot,
     // Character position
-    GameObject.FVector RppLoc, GameObject.FRotator RppRot,
+    Vector3 RppLoc, Rotator RppRot,
     // Base health for all characters
     int Health,
     // Batman, Robin and Nightwing armour

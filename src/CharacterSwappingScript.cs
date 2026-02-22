@@ -1,7 +1,7 @@
-global using FVector = BmSDK.GameObject.FVector;
 using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
+using System.Numerics;
 
 namespace Samuil1337.CharacterSwapping;
 
@@ -190,7 +190,7 @@ class CharacterSwappingScript : Script
         return rpc.CombatPawn;
     }
 
-    void PlayTransitionEffects(FVector location)
+    void PlayTransitionEffects(Vector3 location)
     {
         var emitter = Game.SpawnActor<Emitter>(location)!;
         emitter.SetTemplate(spawnEffectTemplate, bDestroyOnFinish: true);
