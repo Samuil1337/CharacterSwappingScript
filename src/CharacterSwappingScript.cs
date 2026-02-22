@@ -1,3 +1,4 @@
+global using FVector = BmSDK.GameObject.FVector;
 using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
@@ -65,6 +66,8 @@ class CharacterSwappingScript : Script
         spawnEffectTemplate.AddToRoot();
     }
 
+    public override void OnLoad() => Main();
+
     public override void OnTick()
     {
         // Counts down timer each tick (which only occurs during gameplay)
@@ -119,12 +122,12 @@ class CharacterSwappingScript : Script
 
         LoadPackages(charInfo, rgi, gri);
 
-        DoSwitch(wi, charInfo, rpp, rpc);
+        rpp = DoSwitch(wi, charInfo, rpp, rpc);
 
         // Fix inconsistencies after player switch
         dto.ApplyToRpc(rpc, pData);
 
-        if (SpawnEffectEnabled) PlayTransitionEffects(wi, rpc);
+        if (SpawnEffectEnabled) PlayTransitionEffects(rpp.Location);
 
         // Apply swapping cooldown
         swapCooldownTimer = SwapCooldown;
@@ -172,7 +175,7 @@ class CharacterSwappingScript : Script
         return 0;
     }
 
-    static void DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
+    static RPawnPlayer DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
     {
         // Switch character
         var act = new RSeqAct_SwitchPlayerCharacter(wi)
@@ -183,14 +186,14 @@ class CharacterSwappingScript : Script
         rpc.PrepareForPlayerSwitch();   // Resets HUD
         act.RestartPlayer(rpc); // Performs switch of Pawn
         rpp.Destroy();  // Removes old RPawnPlayer
+
+        return rpc.CombatPawn;
     }
 
-    void PlayTransitionEffects(WorldInfo wi, RPlayerController rpc)
+    void PlayTransitionEffects(FVector location)
     {
-        var spawnEffect = new ParticleSystemComponent(wi);
-        spawnEffect.SetTemplate(spawnEffectTemplate);
-        spawnEffect.SetScale(SpawnEffectScale);
-        rpc.CombatPawn.AttachComponent(spawnEffect);
-        spawnEffect.ActivateSystem();
+        var emitter = Game.SpawnActor<Emitter>(location)!;
+        emitter.SetTemplate(spawnEffectTemplate, bDestroyOnFinish: true);
+        emitter.ParticleSystemComponent.SetScale(SpawnEffectScale);
     }
 }
