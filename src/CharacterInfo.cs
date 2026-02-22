@@ -10,7 +10,7 @@ namespace Samuil1337.CharacterSwapping;
 /// <param name="DlcBase">The prefix that packages for the StoryDLC/PDCL (Harley Quinn's Revenge) use (i.e. Playable_RobinStoryDLC).
 /// This is only necessary to set for Robin as the game crashes if the wrong character is loaded in the StoryDLC.
 /// Keep it null for the others.</param>
-public sealed record CharacterInfo(
+sealed record CharacterInfo(
     PlayableCharacter BaseId,
     string CharacterName,
     string Base,
@@ -18,12 +18,13 @@ public sealed record CharacterInfo(
     string? DlcBase = null
 )
 {
-    private const string PkgSuffix = "_SF";
     public const string StdSkin = "Std";
     public const string AnimatedSkin = "Animated";
 
-    private static string BuildPkg(string name) => name + PkgSuffix;
-    private static string BuildId(string prefix, string name) => prefix + "_" + name;
+    const string PkgSuffix = "_SF";
+
+    static string BuildPkg(string name) => name + PkgSuffix;
+    static string BuildId(string prefix, string name) => prefix + "_" + name;
 
     /// <summary>
     /// Gets the name of the package which defines the characters animations, gadgets and moves.

@@ -9,7 +9,7 @@ namespace Samuil1337.CharacterSwapping;
 /// </summary>
 /// <remarks>Use this record to snapshot and restore a player's state when switching characters.
 /// All values are intended to be consistent with the game world at the time of capture.</remarks>
-public sealed record PlayerState(
+sealed record PlayerState(
     // Camera position
     GameObject.FVector RpcLoc, GameObject.FRotator RpcRot,
     // Character position
@@ -45,7 +45,22 @@ public sealed record PlayerState(
         );
     }
 
-    private void ApplyMovement(RPlayerController rpc, RPawnPlayer rpp)
+    /// <summary>
+    /// Applies the values of the DTO (before the character switch) to the RPC (after the switch),
+    /// therefore, allowing for smoother transitions.
+    /// </summary>
+    /// <param name="rpc">The RPC to restore the state of</param>
+    /// <param name="pData">The persistent data object containing player health and armor values.</param>
+    public void ApplyToRpc(RPlayerController rpc, RPersistentData pData)
+    {
+        var rpp = rpc.CombatPawn;
+
+        ApplyMovement(rpc, rpp);
+        ApplyHealth(rpc, rpp, pData);
+        ApplyDetectiveVision(rpc);
+    }
+
+    void ApplyMovement(RPlayerController rpc, RPawnPlayer rpp)
     {
         // RSeqAct_SwitchPlayerCharacter isn't reliable in Challenge Maps,
         // therefore, we must manually override the position
@@ -56,7 +71,7 @@ public sealed record PlayerState(
         rpc.SetRotation(RpcRot);
     }
 
-    private void ApplyHealth(RPlayerController rpc, RPawnPlayer rpp, RPersistentData pData)
+    void ApplyHealth(RPlayerController rpc, RPawnPlayer rpp, RPersistentData pData)
     {
         // Transfer health in save data
         pData.BallisticArmour = BArmor;
@@ -80,27 +95,12 @@ public sealed record PlayerState(
         rpc.ShowHealthBar(rpc.HudMovieSide);
     }
 
-    private void ApplyDetectiveVision(RPlayerController rpc)
+    void ApplyDetectiveVision(RPlayerController rpc)
     {
         // Transfer Detective Mode state
         if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
         {
             rpc.bInvestigateMode = XRay;
         }
-    }
-
-    /// <summary>
-    /// Applies the values of the DTO (before the character switch) to the RPC (after the switch),
-    /// therefore, allowing for smoother transitions.
-    /// </summary>
-    /// <param name="rpc">The RPC to restore the state of</param>
-    /// <param name="pData">The persistent data object containing player health and armor values.</param>
-    public void ApplyToRpc(RPlayerController rpc, RPersistentData pData)
-    {
-        var rpp = rpc.CombatPawn;
-
-        ApplyMovement(rpc, rpp);
-        ApplyHealth(rpc, rpp, pData);
-        ApplyDetectiveVision(rpc);
     }
 }
