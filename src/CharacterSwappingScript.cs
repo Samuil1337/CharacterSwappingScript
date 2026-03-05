@@ -6,13 +6,12 @@ using System.Numerics;
 namespace Samuil1337.CharacterSwapping;
 
 [Script(name: "CharacterSwappingScript")]
-class CharacterSwappingScript : Script
+sealed class CharacterSwappingScript : Script
 {
     /// <summary>
     /// Provides a read-only mapping of each playable character to its associated character information.
+    /// This is useful for getting data necessary for switching characters.
     /// </summary>
-    /// <remarks>The dictionary contains predefined entries for all supported playable characters. The
-    /// collection is immutable and cannot be modified at runtime.</remarks>
     public static readonly IReadOnlyDictionary<PlayableCharacter, CharacterInfo> Characters =
         new Dictionary<PlayableCharacter, CharacterInfo>
         {
@@ -49,21 +48,27 @@ class CharacterSwappingScript : Script
             ),
         };
 
-    static readonly bool SpawnEffectEnabled = false;    // TODO(Samuil1337): Reenable spawn effect when done testing
-    const string SpawnEffectPkg = "Under_C2_Ch5";   // TODO(Samuil1337): Create SF package or load together with Robin
+    // Smoke effect on character switch
+    const string SpawnEffectPkg = "Under_C2_Ch5";   // TODO: Create SF package or load together with Robin
     const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
-    const float SpawnEffectScale = 1.0f;
+    static readonly bool SpawnEffectEnabled = false;    // TODO: Reenable spawn effect when done testing
+    static readonly float SpawnEffectScale = 1.0f;
     ParticleSystem? spawnEffectTemplate;
-    // The timer is scaled by seconds
-    const float SwapCooldown = 0f;  // TODO(Samuil1337): Reenable cooldown when done testing
+
+    // Cooldown for character switch
+    static readonly bool SwapCooldownEnabled = false;   // TODO: Reenable cooldown when done testing
+    static readonly float SwapCooldown = 5.0f;  // The timer is scaled by seconds
     float swapCooldownTimer = SwapCooldown;
 
     public override void Main()
     {
-        if (!SpawnEffectEnabled) return;
-        Game.LoadPackage(SpawnEffectPkg);
-        spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
-        spawnEffectTemplate.AddToRoot();
+        // Load in spawn effect assets if enabled
+        if (SpawnEffectEnabled)
+        {
+            Game.LoadPackage(SpawnEffectPkg);
+            spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
+            spawnEffectTemplate.AddToRoot();
+        }
     }
 
     public override void OnLoad() => Main();
@@ -71,7 +76,10 @@ class CharacterSwappingScript : Script
     public override void OnTick()
     {
         // Counts down timer each tick (which only occurs during gameplay)
-        swapCooldownTimer -= Game.GetDeltaTime();
+        if (SwapCooldownEnabled)
+        {
+            swapCooldownTimer -= Game.GetDeltaTime();
+        }
     }
 
     public override void OnKeyDown(Keys key)
@@ -99,7 +107,7 @@ class CharacterSwappingScript : Script
     void SwapCharacter(PlayableCharacter character)
     {
         // Make sure swapping is allowed
-        if (swapCooldownTimer > 0) return;
+        if (SwapCooldownEnabled && swapCooldownTimer > 0) return;
 
         // Acquire important managers
         var rpc = Game.GetPlayerController();
@@ -130,7 +138,10 @@ class CharacterSwappingScript : Script
         if (SpawnEffectEnabled) PlayTransitionEffects(rpp.Location);
 
         // Apply swapping cooldown
-        swapCooldownTimer = SwapCooldown;
+        if (SwapCooldownEnabled)
+        {
+            swapCooldownTimer = SwapCooldown;
+        }
     }
 
     static bool IsValid(params GameObject[] objects)
@@ -156,7 +167,7 @@ class CharacterSwappingScript : Script
         var skinId = isDlc ? charInfo.DlcSkinId : charInfo.SkinId;
         Game.LoadPackage(basePkg);
         Game.LoadPackage(skinPkg);
-        rgi.LoadPC(skinId, GetDamageState(charInfo, gri));  // TODO(Samuil1337): Update DamageLevel properly
+        rgi.LoadPC(skinId, GetDamageState(charInfo, gri));  // TODO: Update DamageLevel properly
     }
 
     static int GetDamageState(CharacterInfo charInfo, RGameRI gri)
