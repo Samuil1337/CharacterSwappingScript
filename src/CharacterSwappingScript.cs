@@ -25,7 +25,8 @@ sealed class CharacterSwappingScript : Script
                 BaseId: PlayableCharacter.Batman,
                 CharacterName: "Batman",
                 Base: "Playable_Batman",
-                Skin: CharacterInfo.StdSkin
+                Skin: CharacterInfo.StdSkin,
+                HasDamageStatePkgs: true
             ),
             [PlayableCharacter.Catwoman] = new(
                 BaseId: PlayableCharacter.Catwoman,
@@ -166,26 +167,25 @@ sealed class CharacterSwappingScript : Script
     {
         bool isDlc = rgi.bStoryDLC;
         var basePkg = isDlc ? charInfo.DlcBasePkg : charInfo.BasePkg;
-        var skinPkg = isDlc ? charInfo.DlcSkinPkg : charInfo.SkinPkg;
-        var skinId = isDlc ? charInfo.DlcSkinId : charInfo.SkinId;
         Game.LoadPackage(basePkg);
+
+        var damageLevel = GetDamageState(charInfo, gri);
+        var skinPkg = charInfo.GetSkinPkg(damageLevel, isDlc);
         Game.LoadPackage(skinPkg);
-        rgi.LoadPC(skinId, GetDamageState(charInfo, gri));  // TODO: Update DamageLevel properly
+
+        var skinId = isDlc ? charInfo.DlcSkinId : charInfo.SkinId;
+        rgi.LoadPC(skinId, damageLevel);
     }
 
     static int GetDamageState(CharacterInfo charInfo, RGameRI gri)
     {
-        if (charInfo.BaseId != PlayableCharacter.Batman
-            || charInfo.BaseId != PlayableCharacter.Catwoman) return 0;
-
-        var flagMan = gri.FlagManager;
-        for (int i = 9; i >= 0; i--)
+        Debug.Log(charInfo);
+        // TODO: Update DamageLevel properly
+        if (charInfo.BaseId is PlayableCharacter.Batman)
         {
-            if (flagMan.GetGlobalFlag("BatmanDamageLevel" + i))
-            {
-                return i;
-            }
+            return 8;
         }
+
         return 0;
     }
 

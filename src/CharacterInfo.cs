@@ -15,6 +15,7 @@ sealed record CharacterInfo(
     string CharacterName,
     string Base,
     string Skin,
+    bool HasDamageStatePkgs = false,
     string? DlcBase = null
 )
 {
@@ -35,10 +36,6 @@ sealed record CharacterInfo(
     /// to create the desired character with the proper skin.
     /// </summary>
     public string SkinId => BuildId(Base, Skin);
-    /// <summary>
-    /// Gets the name of the package which contains the corresponding skin.
-    /// </summary>
-    public string SkinPkg => BuildPkg(SkinId);
     /// <summary>
     /// Returns a boolean indicating whether the current skin is the default skin.
     /// This is useful when applying Damage States as only the standard skins have them.
@@ -65,4 +62,17 @@ sealed record CharacterInfo(
     /// Gets the package name which contains the corresponding skin for the StoryDLC.
     /// </summary>
     public string DlcSkinPkg => BuildPkg(DlcSkinId);
+
+    /// <summary>
+    /// Gets the name of the package which contains the corresponding skin.
+    /// </summary>
+    public string GetSkinPkg(int damageLevel, bool isDlc)
+    {
+        if (HasDamageStatePkgs && damageLevel != 0)
+        {
+            return BuildPkg(SkinId + $"_{damageLevel}");
+        }
+
+        return isDlc ? DlcSkinPkg : BuildPkg(SkinId);
+    }
 }
