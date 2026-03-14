@@ -110,32 +110,35 @@ sealed class CharacterSwappingScript : Script
         if (SwapCooldownEnabled && swapCooldownTimer > 0) return;
 
         // Acquire important managers
-        var rpc = Game.GetPlayerController();
-        var rpp = rpc.CombatPawn;
-        var rgi = Game.GetGameInfo();
         var wi = Game.GetWorldInfo();
         var gri = Game.GetGameRI();
+        var rgi = Game.GetGameInfo();
         var pData = Game.GetPersistentData();
-
-        // Make sure swapping is safe
-        if (!IsValid(rpc, rpp, rgi, wi, gri, pData)) return;
-        if (!IsSafeToSwitch(rpc)) return;
+        var rpc = Game.GetPlayerController();
+        var rpp = rpc.CombatPawn;
+        if (!IsValid(wi, gri, rgi, pData, rpc, rpp)) return;
 
         // Make sure swapping is necessary
         var charInfo = Characters[character];
         if (rpp.CharacterName == charInfo.CharacterName) return;
 
+        // Make sure swapping is safe
+        if (!IsSafeToSwitch(rpc)) return;
+
         // Save data that should survive player reinstantiation
         var dto = PlayerState.FromRpc(rpc, pData);
 
+        // Perform the actual switch
         LoadPackages(charInfo, rgi, gri);
-
         rpp = DoSwitch(wi, charInfo, rpp, rpc);
 
         // Fix inconsistencies after player switch
         dto.ApplyToRpc(rpc, pData);
 
-        if (SpawnEffectEnabled) PlayTransitionEffects(rpp.Location);
+        if (SpawnEffectEnabled)
+        {
+            PlayTransitionEffects(rpp.Location);
+        }
 
         // Apply swapping cooldown
         if (SwapCooldownEnabled)
@@ -144,7 +147,7 @@ sealed class CharacterSwappingScript : Script
         }
     }
 
-    static bool IsValid(params GameObject[] objects)
+    static bool IsValid(params GameObject?[] objects)
         => objects.All(obj => obj != null && obj.IsValid());
 
     static bool IsSafeToSwitch(RPlayerController rpc)
