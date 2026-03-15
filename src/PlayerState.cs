@@ -35,7 +35,23 @@ sealed record PlayerState(
     /// <returns>A PlayerState snapshot of the player</returns>
     public static PlayerState FromRpc(RPlayerController rpc, RPersistentData pData)
     {
-        var rpp = rpc.CombatPawn;
+        var rpp = rpc.CombatPawn ?? throw new InvalidOperationException("Controller must possess a pawn");
+
+        // Copy over health
+        pData.PlayerHealth = rpp.Health;
+        var mArmour = rpp.CurrentArmourLevels[(int)RPawnPlayer.EArmourType.EA_ArmourMelee];
+        var bArmour = rpp.CurrentArmourLevels[(int)RPawnPlayer.EArmourType.EA_ArmourBallistic];
+        if (rpp.CharacterName == Characters[PlayableCharacter.Catwoman].CharacterName)
+        {
+            pData.CWMeleeArmour = mArmour;
+            pData.CWBallisticArmour = bArmour;
+        }
+        else
+        {
+            pData.MeleeArmour = mArmour;
+            pData.BallisticArmour = bArmour;
+        }
+
         return new PlayerState(
             RpcLoc: rpc.Location, RpcRot: rpc.Rotation,
             RppLoc: rpp.Location, RppRot: rpp.Rotation,
