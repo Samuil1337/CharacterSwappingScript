@@ -131,7 +131,7 @@ sealed class CharacterSwappingScript : Script
 
         // Perform the actual switch
         LoadPackages(charInfo, rgi, gri);
-        rpp = DoSwitch(wi, charInfo, rpp, rpc);
+        rpp = DoSwitch(charInfo.CharacterName, wi, rpc, rpp);
 
         // Fix inconsistencies after player switch
         dto.ApplyToRpc(rpc, pData);
@@ -189,12 +189,12 @@ sealed class CharacterSwappingScript : Script
         return 0;
     }
 
-    static RPawnPlayer DoSwitch(WorldInfo wi, CharacterInfo charInfo, RPawnPlayer rpp, RPlayerController rpc)
+    static RPawnPlayer DoSwitch(string charName, WorldInfo wi, RPlayerController rpc, RPawnPlayer rpp)
     {
         // Switch character
         var act = new RSeqAct_SwitchPlayerCharacter(wi)
         {
-            CharacterName = charInfo.CharacterName,
+            CharacterName = charName,
             PlayerStartPoint = Game.SpawnActor<PlayerStart>(rpp.Location, rpp.Rotation),
         };
         rpc.PrepareForPlayerSwitch();   // Resets HUD
