@@ -179,13 +179,7 @@ sealed class CharacterSwappingScript : Script
 
     static int GetDamageState(CharacterInfo charInfo, RGameRI gri)
     {
-        Debug.Log(charInfo);
-        // TODO: Update DamageLevel properly
-        if (charInfo.BaseId is PlayableCharacter.Batman)
-        {
-            return 8;
-        }
-
+        // TODO: Implement retrieval of skin damage level
         return 0;
     }
 
@@ -209,5 +203,15 @@ sealed class CharacterSwappingScript : Script
         var emitter = Game.SpawnActor<Emitter>(location)!;
         emitter.SetTemplate(spawnEffectTemplate, bDestroyOnFinish: true);
         emitter.ParticleSystemComponent.SetScale(SpawnEffectScale);
+    }
+
+    [Redirect(typeof(RSeqAct_UpdateBatmanDamageLevel), nameof(RSeqAct_UpdateBatmanDamageLevel.Activated))]
+    static void Activated(RSeqAct_UpdateBatmanDamageLevel self)
+    {
+        // If damage state supposed to update, skip and immediately move on
+        if (self.InputLinks[0].bHasImpulse)
+        {
+            self.ActivateOutputLink(0);
+        }
     }
 }
