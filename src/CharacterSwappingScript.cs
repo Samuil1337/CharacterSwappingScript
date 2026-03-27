@@ -99,9 +99,9 @@ sealed class CharacterSwappingScript : Script
             case Keys.F4:
                 SwapCharacter(PlayableCharacter.Nightwing);
                 break;
-            case Keys.F5:
+            /*case Keys.F5:
                 SwapCharacter(PlayableCharacter.BruceWayne);
-                break;
+                break;*/
         }
     }
 
