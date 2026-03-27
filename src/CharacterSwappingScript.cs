@@ -149,7 +149,7 @@ sealed class CharacterSwappingScript : Script
     }
 
     static bool IsValid(params GameObject?[] objects)
-        => objects.All(obj => obj != null && obj.IsValid());
+        => objects.All(obj => obj != null && obj.IsValid);
 
     static bool IsSafeToSwitch(RPlayerController rpc)
     {
