@@ -15,7 +15,6 @@ sealed record CharacterInfo(
     string CharacterName,
     string Base,
     string Skin,
-    bool HasDamageStatePkgs = false,
     string? DlcBase = null
 )
 {
@@ -68,7 +67,7 @@ sealed record CharacterInfo(
     /// </summary>
     public string GetSkinPkg(int damageLevel, bool isDlc)
     {
-        if (HasDamageStatePkgs && damageLevel != 0)
+        if (damageLevel != 0)
         {
             return BuildPkg(SkinId + $"_{damageLevel}");
         }

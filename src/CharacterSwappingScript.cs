@@ -36,8 +36,7 @@ sealed class CharacterSwappingScript : Script
                 BaseId: PlayableCharacter.Batman,
                 CharacterName: "Batman",
                 Base: "Playable_Batman",
-                Skin: CharacterInfo.StdSkin,
-                HasDamageStatePkgs: true
+                Skin: CharacterInfo.StdSkin
             ),
             [PlayableCharacter.Catwoman] = new(
                 BaseId: PlayableCharacter.Catwoman,
