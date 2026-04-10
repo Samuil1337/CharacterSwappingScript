@@ -2,12 +2,23 @@ using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
 using System.Numerics;
+using System.Runtime.InteropServices;
 
 namespace Samuil1337.CharacterSwapping;
 
 [Script(name: "CharacterSwappingScript")]
 sealed class CharacterSwappingScript : Script
 {
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    unsafe delegate int GetSavedDamageLevelForSkinName(FString* skinName);
+
+    const IntPtr GetSavedDamageLevelForSkinNameOffset = 0x821550;
+
+    static readonly GetSavedDamageLevelForSkinName? s_getSavedDamageLevelForSkinName =
+        Marshal.GetDelegateForFunctionPointer<GetSavedDamageLevelForSkinName>(
+            MemUtil.GetBaseAddress() + GetSavedDamageLevelForSkinNameOffset
+        );
+
     /// <summary>
     /// Provides a read-only mapping of each playable character to its associated character information.
     /// This is useful for getting data necessary for switching characters.
@@ -130,7 +141,7 @@ sealed class CharacterSwappingScript : Script
         var dto = PlayerState.FromRpc(rpc, pData);
 
         // Perform the actual switch
-        LoadPackages(charInfo, rgi, gri);
+        LoadPackages(charInfo, rgi);
         rpp = DoSwitch(charInfo.CharacterName, wi, rpc, rpp);
 
         // Fix inconsistencies after player switch
@@ -163,13 +174,13 @@ sealed class CharacterSwappingScript : Script
         return true;
     }
 
-    static void LoadPackages(CharacterInfo charInfo, RGameInfo rgi, RGameRI gri)
+    static void LoadPackages(CharacterInfo charInfo, RGameInfo rgi)
     {
         bool isDlc = rgi.bStoryDLC;
         var basePkg = isDlc ? charInfo.DlcBasePkg : charInfo.BasePkg;
         Game.LoadPackage(basePkg);
 
-        var damageLevel = GetDamageState(charInfo, gri);
+        var damageLevel = GetDamageState(charInfo);
         var skinPkg = charInfo.GetSkinPkg(damageLevel, isDlc);
         Game.LoadPackage(skinPkg);
 
@@ -177,10 +188,10 @@ sealed class CharacterSwappingScript : Script
         rgi.LoadPC(skinId, damageLevel);
     }
 
-    static int GetDamageState(CharacterInfo charInfo, RGameRI gri)
+    static unsafe int GetDamageState(CharacterInfo charInfo)
     {
-        // TODO: Implement retrieval of skin damage level
-        return 0;
+        var skinName = new FString(charInfo.SkinId);
+        return s_getSavedDamageLevelForSkinName!(&skinName);
     }
 
     static RPawnPlayer DoSwitch(string charName, WorldInfo wi, RPlayerController rpc, RPawnPlayer rpp)
