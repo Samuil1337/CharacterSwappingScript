@@ -52,23 +52,23 @@ sealed class CharacterSwappingScript : Script
     // Smoke effect on character switch
     const string SpawnEffectPkg = "Under_C2_Ch5";   // TODO: Create SF package or load together with Robin
     const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
-    static readonly bool SpawnEffectEnabled = false;    // TODO: Reenable spawn effect when done testing
-    static readonly float SpawnEffectScale = 1.0f;
-    ParticleSystem? spawnEffectTemplate;
+    static readonly bool s_spawnEffectEnabled = false;    // TODO: Reenable spawn effect when done testing
+    static readonly float s_spawnEffectScale = 1.0f;
+    ParticleSystem? _spawnEffectTemplate;
 
     // Cooldown for character switch
-    static readonly bool SwapCooldownEnabled = false;   // TODO: Reenable cooldown when done testing
-    static readonly float SwapCooldown = 5.0f;  // The timer is scaled by seconds
-    float swapCooldownTimer = SwapCooldown;
+    static readonly bool s_swapCooldownEnabled = false;   // TODO: Reenable cooldown when done testing
+    static readonly float s_swapCooldown = 5.0f;  // The timer is scaled by seconds
+    float _swapCooldownTimer = s_swapCooldown;
 
     public override void Main()
     {
         // Load in spawn effect assets if enabled
-        if (SpawnEffectEnabled)
+        if (s_spawnEffectEnabled)
         {
             Game.LoadPackage(SpawnEffectPkg);
-            spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
-            spawnEffectTemplate.AddToRoot();
+            _spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
+            _spawnEffectTemplate.AddToRoot();
         }
     }
 
@@ -77,9 +77,9 @@ sealed class CharacterSwappingScript : Script
     public override void OnTick()
     {
         // Counts down timer each tick (which only occurs during gameplay)
-        if (SwapCooldownEnabled)
+        if (s_swapCooldownEnabled)
         {
-            swapCooldownTimer -= Game.GetDeltaTime();
+            _swapCooldownTimer -= Game.GetDeltaTime();
         }
     }
 
@@ -108,7 +108,7 @@ sealed class CharacterSwappingScript : Script
     void SwapCharacter(PlayableCharacter character)
     {
         // Make sure swapping is allowed
-        if (SwapCooldownEnabled && swapCooldownTimer > 0) return;
+        if (s_swapCooldownEnabled && _swapCooldownTimer > 0) return;
 
         // Acquire important managers
         var wi = Game.GetWorldInfo();
@@ -136,15 +136,15 @@ sealed class CharacterSwappingScript : Script
         // Fix inconsistencies after player switch
         dto.ApplyToRpc(rpc, pData);
 
-        if (SpawnEffectEnabled)
+        if (s_spawnEffectEnabled)
         {
             PlayTransitionEffects(rpp.Location);
         }
 
         // Apply swapping cooldown
-        if (SwapCooldownEnabled)
+        if (s_swapCooldownEnabled)
         {
-            swapCooldownTimer = SwapCooldown;
+            _swapCooldownTimer = s_swapCooldown;
         }
     }
 
@@ -201,8 +201,8 @@ sealed class CharacterSwappingScript : Script
     void PlayTransitionEffects(Vector3 location)
     {
         var emitter = Game.SpawnActor<Emitter>(location)!;
-        emitter.SetTemplate(spawnEffectTemplate, bDestroyOnFinish: true);
-        emitter.ParticleSystemComponent.SetScale(SpawnEffectScale);
+        emitter.SetTemplate(_spawnEffectTemplate, bDestroyOnFinish: true);
+        emitter.ParticleSystemComponent.SetScale(s_spawnEffectScale);
     }
 
     [Redirect(typeof(RSeqAct_UpdateBatmanDamageLevel), nameof(RSeqAct_UpdateBatmanDamageLevel.Activated))]
