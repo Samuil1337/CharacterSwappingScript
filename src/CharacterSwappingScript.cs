@@ -204,14 +204,4 @@ sealed class CharacterSwappingScript : Script
         emitter.SetTemplate(_spawnEffectTemplate, bDestroyOnFinish: true);
         emitter.ParticleSystemComponent.SetScale(s_spawnEffectScale);
     }
-
-    [Redirect(typeof(RSeqAct_UpdateBatmanDamageLevel), nameof(RSeqAct_UpdateBatmanDamageLevel.Activated))]
-    static void Activated(RSeqAct_UpdateBatmanDamageLevel self)
-    {
-        // If damage state supposed to update, skip and immediately move on
-        if (self.InputLinks[0].bHasImpulse)
-        {
-            self.ActivateOutputLink(0);
-        }
-    }
 }
