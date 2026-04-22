@@ -24,29 +24,32 @@ sealed record CharacterInfo(
     const string PkgSuffix = "_SF";
 
     static string BuildPkg(string name) => name + PkgSuffix;
+
     static string BuildId(string prefix, string name) => prefix + "_" + name;
 
     /// <summary>
     /// Gets the name of the package which defines the characters animations, gadgets and moves.
     /// </summary>
     public string BasePkg => BuildPkg(Base);
+
     /// <summary>
     /// Gets the unique identifier for the skin, used by <see cref="RGameInfo.LoadPC(FName, int)"/>
     /// to create the desired character with the proper skin.
     /// </summary>
     public string SkinId => BuildId(Base, Skin);
+
     /// <summary>
     /// Returns a boolean indicating whether the current skin is the default skin.
     /// This is useful when applying Damage States as only the standard skins have them.
     /// </summary>
     public bool IsDefaultSkin => Skin == StdSkin;
+
     /// <summary>
     /// Gets the name of the base package specific to the StoryDLC (PDLC)
     /// and returns the standard base package if no DLC base is defined/necessary.
     /// </summary>
-    public string DlcBasePkg => (DlcBase != null)
-        ? BuildPkg(DlcBase)
-        : BasePkg;
+    public string DlcBasePkg => (DlcBase != null) ? BuildPkg(DlcBase) : BasePkg;
+
     /// <summary>
     /// Gets the identifier of the PDLC skin associated with the instance--similar use to <see cref="SkinId"/>.
     /// </summary>
@@ -54,9 +57,8 @@ sealed record CharacterInfo(
     /// He has his own corresponding Std Skin "Playable_RobinStoryDLC_Std_SF" which must be loaded.
     /// However, if one wishes to use a different skin, the "StoryDLC" suffix must be dropped.
     /// This property facilitates that logic.</remarks>
-    public string DlcSkinId => (DlcBase != null && IsDefaultSkin)
-        ? BuildId(DlcBase, Skin)
-        : SkinId;
+    public string DlcSkinId => (DlcBase != null && IsDefaultSkin) ? BuildId(DlcBase, Skin) : SkinId;
+
     /// <summary>
     /// Gets the package name which contains the corresponding skin for the StoryDLC.
     /// </summary>

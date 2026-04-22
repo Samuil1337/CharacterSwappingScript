@@ -1,6 +1,6 @@
+using System.Numerics;
 using BmSDK;
 using BmSDK.BmGame;
-using System.Numerics;
 using static Samuil1337.CharacterSwapping.CharacterSwappingScript;
 
 namespace Samuil1337.CharacterSwapping;
@@ -12,15 +12,19 @@ namespace Samuil1337.CharacterSwapping;
 /// All values are intended to be consistent with the game world at the time of capture.</remarks>
 sealed record PlayerState(
     // Camera position
-    Vector3 RpcLoc, Rotator RpcRot,
+    Vector3 RpcLoc,
+    Rotator RpcRot,
     // Character position
-    Vector3 RppLoc, Rotator RppRot,
+    Vector3 RppLoc,
+    Rotator RppRot,
     // Base health for all characters
     int Health,
     // Batman, Robin and Nightwing armour
-    int BArmor, int MArmor,
+    int BArmor,
+    int MArmor,
     // Catwoman armour
-    int CwBArmor, int CwMArmor,
+    int CwBArmor,
+    int CwMArmor,
     // Detective vision
     bool XRay
 )
@@ -35,7 +39,8 @@ sealed record PlayerState(
     /// <returns>A PlayerState snapshot of the player</returns>
     public static PlayerState FromRpc(RPlayerController rpc, RPersistentData pData)
     {
-        var rpp = rpc.CombatPawn ?? throw new InvalidOperationException("Controller must possess a pawn");
+        var rpp =
+            rpc.CombatPawn ?? throw new InvalidOperationException("Controller must possess a pawn");
 
         // Copy over health
         pData.PlayerHealth = rpp.Health;
@@ -53,11 +58,15 @@ sealed record PlayerState(
         }
 
         return new PlayerState(
-            RpcLoc: rpc.Location, RpcRot: rpc.Rotation,
-            RppLoc: rpp.Location, RppRot: rpp.Rotation,
+            RpcLoc: rpc.Location,
+            RpcRot: rpc.Rotation,
+            RppLoc: rpp.Location,
+            RppRot: rpp.Rotation,
             Health: pData.PlayerHealth,
-            BArmor: pData.BallisticArmour, MArmor: pData.MeleeArmour,
-            CwBArmor: pData.CWBallisticArmour, CwMArmor: pData.CWMeleeArmour,
+            BArmor: pData.BallisticArmour,
+            MArmor: pData.MeleeArmour,
+            CwBArmor: pData.CWBallisticArmour,
+            CwMArmor: pData.CWMeleeArmour,
             XRay: rpc.bInvestigateMode
         );
     }
@@ -98,7 +107,7 @@ sealed record PlayerState(
 
         // Apply health to player
         rpp.Health = Health;
-        rpp.HealthUpdated();    // Optional, seems to do multiplayer updates
+        rpp.HealthUpdated(); // Optional, seems to do multiplayer updates
 
         // Apply armor
         bool isCatwoman = rpp.CharacterName == Characters[PlayableCharacter.Catwoman].CharacterName;

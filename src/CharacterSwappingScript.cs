@@ -1,8 +1,8 @@
+using System.Numerics;
+using System.Runtime.InteropServices;
 using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
-using System.Numerics;
-using System.Runtime.InteropServices;
 
 namespace Samuil1337.CharacterSwapping;
 
@@ -60,15 +60,15 @@ sealed class CharacterSwappingScript : Script
         };
 
     // Smoke effect on character switch
-    const string SpawnEffectPkg = "Under_C2_Ch5";   // TODO: Create SF package or load together with Robin
+    const string SpawnEffectPkg = "Under_C2_Ch5"; // TODO: Create SF package or load together with Robin
     const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
-    static readonly bool s_spawnEffectEnabled = false;    // TODO: Reenable spawn effect when done testing
+    static readonly bool s_spawnEffectEnabled = false; // TODO: Reenable spawn effect when done testing
     static readonly float s_spawnEffectScale = 1.0f;
     ParticleSystem? _spawnEffectTemplate;
 
     // Cooldown for character switch
-    static readonly bool s_swapCooldownEnabled = false;   // TODO: Reenable cooldown when done testing
-    static readonly float s_swapCooldown = 5.0f;  // The timer is scaled by seconds
+    static readonly bool s_swapCooldownEnabled = false; // TODO: Reenable cooldown when done testing
+    static readonly float s_swapCooldown = 5.0f; // The timer is scaled by seconds
     float _swapCooldownTimer = s_swapCooldown;
 
     public override void Main()
@@ -118,7 +118,8 @@ sealed class CharacterSwappingScript : Script
     void SwapCharacter(PlayableCharacter character)
     {
         // Make sure swapping is allowed
-        if (s_swapCooldownEnabled && _swapCooldownTimer > 0) return;
+        if (s_swapCooldownEnabled && _swapCooldownTimer > 0)
+            return;
 
         // Acquire important managers
         var wi = Game.GetWorldInfo();
@@ -127,14 +128,17 @@ sealed class CharacterSwappingScript : Script
         var pData = Game.GetPersistentData();
         var rpc = Game.GetPlayerController();
         var rpp = rpc.CombatPawn;
-        if (!IsValid(wi, gri, rgi, pData, rpc, rpp)) return;
+        if (!IsValid(wi, gri, rgi, pData, rpc, rpp))
+            return;
 
         // Make sure swapping is necessary
         var charInfo = Characters[character];
-        if (rpp.CharacterName == charInfo.CharacterName) return;
+        if (rpp.CharacterName == charInfo.CharacterName)
+            return;
 
         // Make sure swapping is safe
-        if (!IsSafeToSwitch(rpc)) return;
+        if (!IsSafeToSwitch(rpc))
+            return;
 
         // Save data that should survive player reinstantiation
         var dto = PlayerState.FromRpc(rpc, pData);
@@ -158,17 +162,23 @@ sealed class CharacterSwappingScript : Script
         }
     }
 
-    static bool IsValid(params GameObject?[] objects)
-        => objects.All(obj => obj != null && obj.IsValid);
+    static bool IsValid(params GameObject?[] objects) =>
+        objects.All(obj => obj != null && obj.IsValid);
 
     static bool IsSafeToSwitch(RPlayerController rpc)
     {
-        if (rpc.bCinematicMode || rpc.bForceCinematicMode) return false;
-        if (rpc.ActiveCinematicMode != null) return false;
-        if (rpc.BatmanCutscene != null) return false;
-        if (rpc.IsPlayingFullScreenMovie()) return false;
-        if (rpc.IsLookInputIgnored()) return false;
-        if (rpc.IsMoveInputIgnored()) return false;
+        if (rpc.bCinematicMode || rpc.bForceCinematicMode)
+            return false;
+        if (rpc.ActiveCinematicMode != null)
+            return false;
+        if (rpc.BatmanCutscene != null)
+            return false;
+        if (rpc.IsPlayingFullScreenMovie())
+            return false;
+        if (rpc.IsLookInputIgnored())
+            return false;
+        if (rpc.IsMoveInputIgnored())
+            return false;
 
         return true;
     }
@@ -193,7 +203,12 @@ sealed class CharacterSwappingScript : Script
         return s_getSavedDamageLevelForSkinName!(&skinName);
     }
 
-    static RPawnPlayer DoSwitch(string charName, WorldInfo wi, RPlayerController rpc, RPawnPlayer rpp)
+    static RPawnPlayer DoSwitch(
+        string charName,
+        WorldInfo wi,
+        RPlayerController rpc,
+        RPawnPlayer rpp
+    )
     {
         // Switch character
         var act = new RSeqAct_SwitchPlayerCharacter(wi)
@@ -201,9 +216,9 @@ sealed class CharacterSwappingScript : Script
             CharacterName = charName,
             PlayerStartPoint = Game.SpawnActor<PlayerStart>(rpp.Location, rpp.Rotation),
         };
-        rpc.PrepareForPlayerSwitch();   // Resets HUD
+        rpc.PrepareForPlayerSwitch(); // Resets HUD
         act.RestartPlayer(rpc); // Performs switch of Pawn
-        rpp.Destroy();  // Removes old RPawnPlayer
+        rpp.Destroy(); // Removes old RPawnPlayer
 
         return rpc.CombatPawn;
     }
