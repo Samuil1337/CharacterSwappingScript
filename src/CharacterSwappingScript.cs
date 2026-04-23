@@ -10,17 +10,10 @@ namespace Samuil1337.CharacterSwapping;
 sealed class CharacterSwappingScript : Script
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    unsafe delegate void GetSkinName(FString* skinName);
+    public unsafe delegate int GetSavedDamageLevelForSkinNameDelegate(FString* skinName);
 
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    unsafe delegate int GetSavedDamageLevelForSkinName(FString* skinName);
-
-    static readonly GetSkinName s_getSkinName = Marshal.GetDelegateForFunctionPointer<GetSkinName>(
-        MemUtil.GetBaseAddress() + 0x9FD1E0
-    );
-
-    static readonly GetSavedDamageLevelForSkinName s_getSavedDamageLevelForSkinName =
-        Marshal.GetDelegateForFunctionPointer<GetSavedDamageLevelForSkinName>(
+    public static readonly GetSavedDamageLevelForSkinNameDelegate GetSavedDamageLevelForSkinName =
+        Marshal.GetDelegateForFunctionPointer<GetSavedDamageLevelForSkinNameDelegate>(
             MemUtil.GetBaseAddress() + 0x821550
         );
 
@@ -34,33 +27,28 @@ sealed class CharacterSwappingScript : Script
             [PlayableCharacter.BruceWayne] = new(
                 BaseId: PlayableCharacter.BruceWayne,
                 CharacterName: "Bruce_Wayne",
-                Base: "Playable_BruceWayne",
-                Skin: CharacterInfo.StdSkin
+                Base: "Playable_BruceWayne"
             ),
             [PlayableCharacter.Batman] = new(
                 BaseId: PlayableCharacter.Batman,
                 CharacterName: "Batman",
-                Base: "Playable_Batman",
-                Skin: CharacterInfo.StdSkin
+                Base: "Playable_Batman"
             ),
             [PlayableCharacter.Catwoman] = new(
                 BaseId: PlayableCharacter.Catwoman,
                 CharacterName: "Catwoman",
-                Base: "Playable_Catwoman",
-                Skin: CharacterInfo.StdSkin
+                Base: "Playable_Catwoman"
             ),
             [PlayableCharacter.Robin] = new(
                 BaseId: PlayableCharacter.Robin,
                 CharacterName: "Robin",
                 Base: "Playable_Robin",
-                DlcBase: "Playable_RobinStoryDLC",
-                Skin: CharacterInfo.StdSkin
+                DlcBase: "Playable_RobinStoryDLC"
             ),
             [PlayableCharacter.Nightwing] = new(
                 BaseId: PlayableCharacter.Nightwing,
                 CharacterName: "Nightwing",
-                Base: "Playable_Nightwing",
-                Skin: CharacterInfo.StdSkin
+                Base: "Playable_Nightwing"
             ),
         };
 
@@ -190,22 +178,20 @@ sealed class CharacterSwappingScript : Script
 
     static void LoadPackages(CharacterInfo charInfo, RGameInfo rgi)
     {
-        bool isDlc = rgi.bStoryDLC;
-        var basePkg = isDlc ? charInfo.DlcBasePkg : charInfo.BasePkg;
+        var basePkg = rgi.bStoryDLC ? charInfo.DlcBasePkg : charInfo.BasePkg;
         Game.LoadPackage(basePkg);
 
         var damageLevel = GetDamageState(charInfo);
-        var skinPkg = charInfo.GetSkinPkg(damageLevel, isDlc);
+        var skinPkg = charInfo.GetSkinPkg(damageLevel);
         Game.LoadPackage(skinPkg);
 
-        var skinId = isDlc ? charInfo.DlcSkinId : charInfo.SkinId;
-        rgi.LoadPC(skinId, damageLevel);
+        rgi.LoadPC(charInfo.SkinId, damageLevel);
     }
 
     static unsafe int GetDamageState(CharacterInfo charInfo)
     {
         var skinName = new FString(charInfo.SkinId);
-        return s_getSavedDamageLevelForSkinName!(&skinName);
+        return GetSavedDamageLevelForSkinName(&skinName);
     }
 
     static RPawnPlayer DoSwitch(
