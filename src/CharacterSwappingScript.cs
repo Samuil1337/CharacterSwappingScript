@@ -10,13 +10,18 @@ namespace Samuil1337.CharacterSwapping;
 sealed class CharacterSwappingScript : Script
 {
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+    unsafe delegate void GetSkinName(FString* skinName);
+
+    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
     unsafe delegate int GetSavedDamageLevelForSkinName(FString* skinName);
 
-    const IntPtr GetSavedDamageLevelForSkinNameOffset = 0x821550;
+    static readonly GetSkinName s_getSkinName = Marshal.GetDelegateForFunctionPointer<GetSkinName>(
+        MemUtil.GetBaseAddress() + 0x9FD1E0
+    );
 
-    static readonly GetSavedDamageLevelForSkinName? s_getSavedDamageLevelForSkinName =
+    static readonly GetSavedDamageLevelForSkinName s_getSavedDamageLevelForSkinName =
         Marshal.GetDelegateForFunctionPointer<GetSavedDamageLevelForSkinName>(
-            MemUtil.GetBaseAddress() + GetSavedDamageLevelForSkinNameOffset
+            MemUtil.GetBaseAddress() + 0x821550
         );
 
     /// <summary>
