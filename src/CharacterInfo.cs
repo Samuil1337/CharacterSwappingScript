@@ -44,7 +44,7 @@ sealed record CharacterInfo(
         {
             // If base and skin are the same, the default's chosen
             var selection = GameFunctions.PlayerChosenSkinName;
-            if (selection == Base)
+            if (selection is null || selection == Base)
             {
                 return Base + StdSkinSuffix;
             }

@@ -13,7 +13,7 @@ namespace Samuil1337.CharacterSwapping
                 MemUtil.GetBaseAddress() + 0x821550
             );
 
-        internal static string PlayerChosenSkinName =>
-            Marshal.PtrToStructure<FString>(MemUtil.GetBaseAddress() + 0x12BB068).ToString()!;
+        internal static string? PlayerChosenSkinName =>
+            Marshal.PtrToStructure<FString>(MemUtil.GetBaseAddress() + 0x12BB068).ToString();
     }
 }
