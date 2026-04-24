@@ -1,5 +1,4 @@
 using System.Numerics;
-using System.Runtime.InteropServices;
 using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
@@ -9,14 +8,6 @@ namespace Samuil1337.CharacterSwapping;
 [Script(name: "CharacterSwappingScript")]
 sealed class CharacterSwappingScript : Script
 {
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public unsafe delegate int GetSavedDamageLevelForSkinNameDelegate(FString* skinName);
-
-    public static readonly GetSavedDamageLevelForSkinNameDelegate GetSavedDamageLevelForSkinName =
-        Marshal.GetDelegateForFunctionPointer<GetSavedDamageLevelForSkinNameDelegate>(
-            MemUtil.GetBaseAddress() + 0x821550
-        );
-
     /// <summary>
     /// Provides a read-only mapping of each playable character to its associated character information.
     /// This is useful for getting data necessary for switching characters.
@@ -191,7 +182,7 @@ sealed class CharacterSwappingScript : Script
     static unsafe int GetDamageState(CharacterInfo charInfo)
     {
         var skinName = new FString(charInfo.SkinId);
-        return GetSavedDamageLevelForSkinName(&skinName);
+        return GameFunctions.GetSavedDamageLevelForSkinName(&skinName);
     }
 
     static RPawnPlayer DoSwitch(

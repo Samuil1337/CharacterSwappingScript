@@ -1,8 +1,5 @@
 namespace Samuil1337.CharacterSwapping;
 
-using System.Runtime.InteropServices;
-using BmSDK;
-
 /// <summary>
 /// Represents information about a playable character that's necessary for loading them in.
 /// </summary>
@@ -26,9 +23,6 @@ sealed record CharacterInfo(
 
     static string BuildPkg(string name) => name + PkgSuffix;
 
-    static string PlayerChosenSkinName =>
-        Marshal.PtrToStructure<FString>(MemUtil.GetBaseAddress() + 0x12BB068).ToString()!;
-
     /// <summary>
     /// Gets the name of the package which defines the characters animations, gadgets and moves.
     /// </summary>
@@ -49,7 +43,7 @@ sealed record CharacterInfo(
         get
         {
             // If base and skin are the same, the default's chosen
-            var selection = PlayerChosenSkinName;
+            var selection = GameFunctions.PlayerChosenSkinName;
             if (selection == Base)
             {
                 return Base + StdSkinSuffix;
