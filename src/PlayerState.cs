@@ -1,132 +1,122 @@
 using System.Numerics;
 using BmSDK;
 using BmSDK.BmGame;
-using static Samuil1337.CharacterSwapping.CharacterSwappingScript;
+using static BmSDK.BmGame.RPawnPlayer;
 
-namespace Samuil1337.CharacterSwapping;
-
-/// <summary>
-/// Represents an immutable Data Transfer Object of a player's state, including position, health and animations.
-/// </summary>
-/// <remarks>Use this record to snapshot and restore a player's state when switching characters.
-/// All values are intended to be consistent with the game world at the time of capture.</remarks>
-sealed record PlayerState(
-    // Camera position
-    Vector3 RpcLoc,
-    Rotator RpcRot,
-    // Character position
-    Vector3 RppLoc,
-    Rotator RppRot,
-    // Base health for all characters
-    int Health,
-    // Batman, Robin and Nightwing armour
-    int BArmor,
-    int MArmor,
-    // Catwoman armour
-    int CwBArmor,
-    int CwMArmor,
-    // Detective vision
-    bool XRay
-)
+namespace Samuil1337.CharacterSwapping
 {
     /// <summary>
-    /// Creates a new DTO based on the specified RPC and persistent data.
+    /// Represents an immutable Data Transfer Object of a player's state, including position, health and animations.
+    /// Use this record to snapshot and restore a player's state when switching characters.
     /// </summary>
-    /// <remarks>Should be used before <see cref="DoSwitch(WorldInfo, CharacterInfo, RPawnPlayer, RPlayerController)">
-    /// to capture the RPC state right before switching characters.</remarks>
-    /// <param name="rpc">The RPC to snapshot before the character switch.</param>
-    /// <param name="pData">The persistent data object containing player health and armor values.</param>
-    /// <returns>A PlayerState snapshot of the player</returns>
-    public static PlayerState FromGameState(RPlayerController rpc, RPersistentData pData)
+    sealed record PlayerState(
+        // Camera position
+        Vector3 RpcLoc,
+        Rotator RpcRot,
+        // Character position
+        Vector3 RppLoc,
+        Rotator RppRot,
+        // Base health for all characters
+        int Health,
+        // Batman, Robin and Nightwing armour
+        int MeleeArmor,
+        int BallisticArmor,
+        // Catwoman armour
+        int CwMeleeArmor,
+        int CwBallisticArmor,
+        // Detective vision
+        bool XRay
+    )
     {
-        var rpp =
-            rpc.CombatPawn ?? throw new InvalidOperationException("Controller must possess a pawn");
-
-        // Copy over health
-        pData.PlayerHealth = rpp.Health;
-        var mArmour = rpp.CurrentArmourLevels[(int)RPawnPlayer.EArmourType.EA_ArmourMelee];
-        var bArmour = rpp.CurrentArmourLevels[(int)RPawnPlayer.EArmourType.EA_ArmourBallistic];
-        if (rpp.CharacterName == Characters[PlayableCharacter.Catwoman].CharacterName)
+        /// <summary>
+        /// Creates a new DTO based on the specified RPC and persistent data. Can be applied
+        /// after a switch using <see cref="ApplyToRpc(RPlayerController, RPersistentData)"/>
+        /// </summary>
+        /// <param name="rpc">Controller to snapshot before the character switch.</param>
+        /// <param name="pData">PersistentData to snapshot because some data is invalidated</param>
+        /// <returns>Snapshot of the player before the switch</returns>
+        public static PlayerState FromGameState(RPlayerController rpc, RPersistentData pData)
         {
-            pData.CWMeleeArmour = mArmour;
-            pData.CWBallisticArmour = bArmour;
+            var rpp =
+                rpc.CombatPawn
+                ?? throw new InvalidOperationException("Controller must possess a pawn");
+
+            // Update persistent health
+            rpp.HealthUpdated();
+            rpp.SetPersistentMeleeArmour(rpp.CurrentArmourLevels[(int)EArmourType.EA_ArmourMelee]);
+            rpp.SetPersistentBallisticArmour(
+                rpp.CurrentArmourLevels[(int)EArmourType.EA_ArmourBallistic]
+            );
+
+            return new PlayerState(
+                RpcLoc: rpc.Location,
+                RpcRot: rpc.Rotation,
+                RppLoc: rpp.Location,
+                RppRot: rpp.Rotation,
+                Health: pData.PlayerHealth,
+                MeleeArmor: pData.MeleeArmour,
+                BallisticArmor: pData.BallisticArmour,
+                CwMeleeArmor: pData.CWMeleeArmour,
+                CwBallisticArmor: pData.CWBallisticArmour,
+                XRay: rpc.bInvestigateMode
+            );
         }
-        else
+
+        /// <summary>
+        /// Applies the values of the DTO (before the character switch) to the RPC (after the switch),
+        /// therefore, allowing for smoother transitions.
+        /// </summary>
+        /// <param name="rpc">The RPC to restore the state of</param>
+        /// <param name="pData">The persistent data object containing player health and armor values.</param>
+        public void ApplyToRpc(RPlayerController rpc, RPersistentData pData)
         {
-            pData.MeleeArmour = mArmour;
-            pData.BallisticArmour = bArmour;
+            var rpp = rpc.CombatPawn;
+
+            ApplyMovement(rpc, rpp);
+            ApplyHealth(rpc, rpp, pData);
+            ApplyDetectiveVision(rpc);
         }
 
-        return new PlayerState(
-            RpcLoc: rpc.Location,
-            RpcRot: rpc.Rotation,
-            RppLoc: rpp.Location,
-            RppRot: rpp.Rotation,
-            Health: pData.PlayerHealth,
-            BArmor: pData.BallisticArmour,
-            MArmor: pData.MeleeArmour,
-            CwBArmor: pData.CWBallisticArmour,
-            CwMArmor: pData.CWMeleeArmour,
-            XRay: rpc.bInvestigateMode
-        );
-    }
-
-    /// <summary>
-    /// Applies the values of the DTO (before the character switch) to the RPC (after the switch),
-    /// therefore, allowing for smoother transitions.
-    /// </summary>
-    /// <param name="rpc">The RPC to restore the state of</param>
-    /// <param name="pData">The persistent data object containing player health and armor values.</param>
-    public void ApplyToRpc(RPlayerController rpc, RPersistentData pData)
-    {
-        var rpp = rpc.CombatPawn;
-
-        ApplyMovement(rpc, rpp);
-        ApplyHealth(rpc, rpp, pData);
-        ApplyDetectiveVision(rpc);
-    }
-
-    void ApplyMovement(RPlayerController rpc, RPawnPlayer rpp)
-    {
-        // RSeqAct_SwitchPlayerCharacter isn't reliable in Challenge Maps,
-        // therefore, we must manually override the position
-        rpp.SetLocation(RppLoc);
-        rpp.SetRotation(RppRot);
-        // Makes sure the camera doesn't change with the character swap
-        rpc.SetLocation(RpcLoc);
-        rpc.SetRotation(RpcRot);
-    }
-
-    void ApplyHealth(RPlayerController rpc, RPawnPlayer rpp, RPersistentData pData)
-    {
-        // Transfer health in save data
-        pData.BallisticArmour = BArmor;
-        pData.MeleeArmour = MArmor;
-        pData.CWBallisticArmour = CwBArmor;
-        pData.CWMeleeArmour = CwMArmor;
-
-        // Apply health to player
-        rpp.Health = Health;
-        rpp.HealthUpdated(); // Optional, seems to do multiplayer updates
-
-        // Apply armor
-        bool isCatwoman = rpp.CharacterName == Characters[PlayableCharacter.Catwoman].CharacterName;
-        var bArmorToApply = isCatwoman ? CwBArmor : BArmor;
-        var mArmorToApply = isCatwoman ? CwMArmor : MArmor;
-        rpp.SetArmourCurrent(RPawnPlayer.EArmourType.EA_ArmourBallistic, bArmorToApply);
-        rpp.SetArmourCurrent(RPawnPlayer.EArmourType.EA_ArmourMelee, mArmorToApply);
-
-        // Refresh HUD
-        rpc.InstantUpdateHealth();
-        rpc.ShowHealthBar(rpc.HudMovieSide);
-    }
-
-    void ApplyDetectiveVision(RPlayerController rpc)
-    {
-        // Transfer Detective Mode state
-        if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
+        void ApplyMovement(RPlayerController rpc, RPawnPlayer rpp)
         {
-            rpc.bInvestigateMode = XRay;
+            // RSeqAct_SwitchPlayerCharacter isn't reliable in Challenge Maps,
+            // therefore, we must manually override the position
+            rpp.SetLocation(RppLoc);
+            rpp.SetRotation(RppRot);
+            // Makes sure the camera doesn't change with the character swap
+            rpc.SetLocation(RpcLoc);
+            rpc.SetRotation(RpcRot);
+        }
+
+        void ApplyHealth(RPlayerController rpc, RPawnPlayer rpp, RPersistentData pData)
+        {
+            // Transfer health in save data
+            pData.PlayerHealth = Health;
+            pData.BallisticArmour = BallisticArmor;
+            pData.MeleeArmour = MeleeArmor;
+            pData.CWBallisticArmour = CwBallisticArmor;
+            pData.CWMeleeArmour = CwMeleeArmor;
+
+            // Apply to pawn
+            rpp.Health = Health;
+            rpp.HealthUpdated();
+            rpp.SetArmourCurrent(EArmourType.EA_ArmourMelee, rpp.GetPersistentMeleeArmour());
+            rpp.SetArmourCurrent(
+                EArmourType.EA_ArmourBallistic,
+                rpp.GetPersistentBallisticArmour()
+            );
+
+            // Refresh HUD
+            rpc.ShowHealthBar(rpc.HudMovieSide);
+        }
+
+        void ApplyDetectiveVision(RPlayerController rpc)
+        {
+            // Transfer Detective Mode state
+            if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
+            {
+                rpc.bInvestigateMode = XRay;
+            }
         }
     }
 }
