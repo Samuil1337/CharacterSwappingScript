@@ -3,7 +3,7 @@ using BmSDK;
 using BmSDK.BmGame;
 using static BmSDK.BmGame.RPawnPlayer;
 
-namespace Samuil1337.CharacterSwapping
+namespace Samuil1337.CharacterSwapping.State
 {
     /// <summary>
     /// Represents an immutable Data Transfer Object of a player's state, including position, health and animations.

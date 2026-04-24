@@ -3,7 +3,7 @@ using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
 
-namespace Samuil1337.CharacterSwapping
+namespace Samuil1337.CharacterSwapping.State
 {
     sealed class SwitchContext
     {

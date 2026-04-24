@@ -1,4 +1,5 @@
 using BmSDK.Engine;
+using Samuil1337.CharacterSwapping.State;
 
 namespace Samuil1337.CharacterSwapping
 {
