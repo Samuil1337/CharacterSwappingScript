@@ -37,7 +37,7 @@ sealed record PlayerState(
     /// <param name="rpc">The RPC to snapshot before the character switch.</param>
     /// <param name="pData">The persistent data object containing player health and armor values.</param>
     /// <returns>A PlayerState snapshot of the player</returns>
-    public static PlayerState FromRpc(RPlayerController rpc, RPersistentData pData)
+    public static PlayerState FromGameState(RPlayerController rpc, RPersistentData pData)
     {
         var rpp =
             rpc.CombatPawn ?? throw new InvalidOperationException("Controller must possess a pawn");
