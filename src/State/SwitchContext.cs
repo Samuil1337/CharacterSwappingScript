@@ -2,6 +2,7 @@ using System.Numerics;
 using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
+using Samuil1337.CharacterSwapping.Data;
 
 namespace Samuil1337.CharacterSwapping.State
 {

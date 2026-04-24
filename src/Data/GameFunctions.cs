@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using BmSDK;
 
-namespace Samuil1337.CharacterSwapping
+namespace Samuil1337.CharacterSwapping.Data
 {
     static class GameFunctions
     {

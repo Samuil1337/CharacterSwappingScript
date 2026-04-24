@@ -1,46 +1,13 @@
 using BmSDK.Engine;
+using Samuil1337.CharacterSwapping.Data;
 using Samuil1337.CharacterSwapping.State;
+using static Samuil1337.CharacterSwapping.Data.CharacterRegistry;
 
 namespace Samuil1337.CharacterSwapping
 {
     [Script(name: "CharacterSwappingScript")]
     sealed class CharacterSwappingScript : Script
     {
-        /// <summary>
-        /// Provides a read-only mapping of each playable character to its associated character information.
-        /// This is useful for getting data necessary for switching characters.
-        /// </summary>
-        public static readonly IReadOnlyDictionary<PlayableCharacter, CharacterInfo> Characters =
-            new Dictionary<PlayableCharacter, CharacterInfo>
-            {
-                [PlayableCharacter.BruceWayne] = new(
-                    BaseId: PlayableCharacter.BruceWayne,
-                    CharacterName: "Bruce_Wayne",
-                    Base: "Playable_BruceWayne"
-                ),
-                [PlayableCharacter.Batman] = new(
-                    BaseId: PlayableCharacter.Batman,
-                    CharacterName: "Batman",
-                    Base: "Playable_Batman"
-                ),
-                [PlayableCharacter.Catwoman] = new(
-                    BaseId: PlayableCharacter.Catwoman,
-                    CharacterName: "Catwoman",
-                    Base: "Playable_Catwoman"
-                ),
-                [PlayableCharacter.Robin] = new(
-                    BaseId: PlayableCharacter.Robin,
-                    CharacterName: "Robin",
-                    Base: "Playable_Robin",
-                    DlcBase: "Playable_RobinStoryDLC"
-                ),
-                [PlayableCharacter.Nightwing] = new(
-                    BaseId: PlayableCharacter.Nightwing,
-                    CharacterName: "Nightwing",
-                    Base: "Playable_Nightwing"
-                ),
-            };
-
         // Smoke effect on character switch
         const string SpawnEffectPkg = "Under_C2_Ch5"; // TODO: Create SF package or load together with Robin
         const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
