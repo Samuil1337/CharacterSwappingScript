@@ -1,7 +1,7 @@
 using BmSDK.BmGame;
 using static Samuil1337.CharacterSwapping.Data.CharacterRegistry;
 
-namespace Samuil1337.CharacterSwapping.Redirects
+namespace Samuil1337.CharacterSwapping.Patches
 {
     static class FixVisuals
     {

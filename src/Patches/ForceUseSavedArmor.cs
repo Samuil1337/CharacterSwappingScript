@@ -1,6 +1,6 @@
 using BmSDK.BmScript;
 
-namespace Samuil1337.CharacterSwapping.Redirects
+namespace Samuil1337.CharacterSwapping.Patches
 {
     [ScriptComponent(AutoAttach = true)]
     sealed class ForceRobinUseSavedArmor : ScriptComponent<RPawnPlayerRobin>
