@@ -1,6 +1,7 @@
 using System.Numerics;
 using BmSDK;
 using BmSDK.BmGame;
+using Samuil1337.CharacterSwapping.Patches;
 using static BmSDK.BmGame.RPawnPlayer;
 
 namespace Samuil1337.CharacterSwapping.State
@@ -42,11 +43,7 @@ namespace Samuil1337.CharacterSwapping.State
                 ?? throw new InvalidOperationException("Controller must possess a pawn");
 
             // Update persistent health
-            rpp.HealthUpdated();
-            rpp.SetPersistentMeleeArmour(rpp.CurrentArmourLevels[(int)EArmourType.EA_ArmourMelee]);
-            rpp.SetPersistentBallisticArmour(
-                rpp.CurrentArmourLevels[(int)EArmourType.EA_ArmourBallistic]
-            );
+            rpp.UpdatePersistentHealthAndArmor();
 
             return new PlayerState(
                 RpcLoc: rpc.Location,
@@ -92,19 +89,13 @@ namespace Samuil1337.CharacterSwapping.State
         {
             // Transfer health in save data
             pData.PlayerHealth = Health;
-            pData.BallisticArmour = BallisticArmor;
             pData.MeleeArmour = MeleeArmor;
-            pData.CWBallisticArmour = CwBallisticArmor;
+            pData.BallisticArmour = BallisticArmor;
             pData.CWMeleeArmour = CwMeleeArmor;
+            pData.CWBallisticArmour = CwBallisticArmor;
 
             // Apply to pawn
-            rpp.Health = Health;
-            rpp.HealthUpdated();
-            rpp.SetArmourCurrent(EArmourType.EA_ArmourMelee, rpp.GetPersistentMeleeArmour());
-            rpp.SetArmourCurrent(
-                EArmourType.EA_ArmourBallistic,
-                rpp.GetPersistentBallisticArmour()
-            );
+            rpp.LoadPersistentHealthAndArmor();
 
             // Refresh HUD
             rpc.ShowHealthBar(rpc.HudMovieSide);

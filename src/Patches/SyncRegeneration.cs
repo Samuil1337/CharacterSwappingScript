@@ -4,6 +4,31 @@ using static BmSDK.BmGame.RPawnPlayer;
 
 namespace Samuil1337.CharacterSwapping.Patches
 {
+    static class SyncPawnAndPersistentData
+    {
+        internal static void UpdatePersistentHealthAndArmor(this RPawnPlayer pawn)
+        {
+            pawn.HealthUpdated();
+            pawn.SetPersistentMeleeArmour(
+                pawn.CurrentArmourLevels[(int)EArmourType.EA_ArmourMelee]
+            );
+            pawn.SetPersistentBallisticArmour(
+                pawn.CurrentArmourLevels[(int)EArmourType.EA_ArmourBallistic]
+            );
+        }
+
+        internal static void LoadPersistentHealthAndArmor(this RPawnPlayer pawn)
+        {
+            pawn.Health = Game.GetPersistentData().PlayerHealth;
+            pawn.HealthUpdated();
+            pawn.SetArmourCurrent(EArmourType.EA_ArmourMelee, pawn.GetPersistentMeleeArmour());
+            pawn.SetArmourCurrent(
+                EArmourType.EA_ArmourBallistic,
+                pawn.GetPersistentBallisticArmour()
+            );
+        }
+    }
+
     [ScriptComponent(AutoAttach = true)]
     sealed class SyncRegenerationComponent : ScriptComponent<RPawnPlayer>
     {
@@ -11,7 +36,7 @@ namespace Samuil1337.CharacterSwapping.Patches
         void RestoreArmour(int toRecover)
         {
             // Set armor in RPersistentData
-            UpdatePersistentArmor();
+            Owner.UpdatePersistentHealthAndArmor();
 
             // Do regeneration on save data...
             var pData = Game.GetPersistentData();
@@ -37,17 +62,7 @@ namespace Samuil1337.CharacterSwapping.Patches
             );
 
             // Apply new health to pawn
-            LoadPersistentArmor();
-        }
-
-        void UpdatePersistentArmor()
-        {
-            Owner.SetPersistentMeleeArmour(
-                Owner.CurrentArmourLevels[(int)EArmourType.EA_ArmourMelee]
-            );
-            Owner.SetPersistentBallisticArmour(
-                Owner.CurrentArmourLevels[(int)EArmourType.EA_ArmourBallistic]
-            );
+            Owner.LoadPersistentHealthAndArmor();
         }
 
         void RestoreArmorOfCharacter(
@@ -116,15 +131,6 @@ namespace Samuil1337.CharacterSwapping.Patches
             }
 
             return -1;
-        }
-
-        void LoadPersistentArmor()
-        {
-            Owner.SetArmourCurrent(EArmourType.EA_ArmourMelee, Owner.GetPersistentMeleeArmour());
-            Owner.SetArmourCurrent(
-                EArmourType.EA_ArmourBallistic,
-                Owner.GetPersistentBallisticArmour()
-            );
         }
     }
 }
