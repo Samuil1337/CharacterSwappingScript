@@ -113,7 +113,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         unsafe int GetDamageState()
         {
-            var skinName = new FString(_character.SkinId); // Memory leak factory
+            using var skinName = new FString(_character.SkinId);
             return GameFunctions.GetSavedDamageLevelForSkinName(&skinName);
         }
 
