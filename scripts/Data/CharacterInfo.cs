@@ -19,11 +19,13 @@ namespace Samuil1337.CharacterSwapping.Data
         string? DlcBase = null
     )
     {
-        const string PkgSuffix = "_SF";
-        const string StdSkinSuffix = "_Std";
         const string AnimatedSkinSuffix = "_Animated";
 
-        static string BuildPkg(string name) => name + PkgSuffix;
+        static string BuildPkg(string name) => name + "_SF";
+
+        static string BuildStdSkin(string skinId) => skinId + "_Std";
+
+        static string BuildAnimatedSkin(string skinId) => skinId + AnimatedSkinSuffix;
 
         /// <summary>
         /// Gets the name of the package which defines the characters animations, gadgets and moves.
@@ -48,7 +50,7 @@ namespace Samuil1337.CharacterSwapping.Data
                 var selection = GameFunctions.PlayerChosenSkinName;
                 if (selection is null || selection == Base)
                 {
-                    return Base + StdSkinSuffix;
+                    return BuildStdSkin(Base);
                 }
 
                 // If skin is specific to character, return it
@@ -62,12 +64,12 @@ namespace Samuil1337.CharacterSwapping.Data
                 {
                     if (selection.EndsWith(AnimatedSkinSuffix))
                     {
-                        return Base + AnimatedSkinSuffix;
+                        return BuildAnimatedSkin(Base);
                     }
                 }
 
                 // Default to standard skin
-                return Base + StdSkinSuffix;
+                return BuildStdSkin(Base);
             }
         }
 
@@ -90,7 +92,7 @@ namespace Samuil1337.CharacterSwapping.Data
         {
             if (damageLevel > 0)
             {
-                return BuildPkg(SkinId + $"_{damageLevel}");
+                return BuildPkg($"{SkinId}_{damageLevel}");
             }
 
             return BuildPkg(SkinId);
