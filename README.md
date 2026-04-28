@@ -6,7 +6,7 @@ _This mod is currently under construction! Some functionality might be unstable 
 
 ## How to install
 1. Get the [BmSDK](https://github.com/etkramer/BmSDK?tab=readme-ov-file#-getting-started-for-users)
-2. Clone the repo into `%GameDir%\BmGame\Scripts` by either:
+2. Clone the repo into `%GameDir%\BmGame\Mods` by either:
    - using `git clone https://github.com/Samuil1337/CharacterSwappingScript.git` in the target directory
    - or downloading and extracting [the latest ZIP](https://github.com/Samuil1337/CharacterSwappingScript/archive/refs/heads/main.zip) in the target directory
 3. Enjoy!
