@@ -104,17 +104,11 @@ namespace Samuil1337.CharacterSwapping.State
             var basePkg = _rgi.bStoryDLC ? _character.DlcBasePkg : _character.BasePkg;
             Game.LoadPackage(basePkg);
 
-            var damageLevel = GetDamageState();
+            var damageLevel = _character.SkinDamageLevel;
             var skinPkg = _character.GetSkinPkg(damageLevel);
             Game.LoadPackage(skinPkg);
 
             _rgi.LoadPC(_character.SkinId, damageLevel);
-        }
-
-        unsafe int GetDamageState()
-        {
-            using var skinName = new FString(_character.SkinId);
-            return GameFunctions.GetSavedDamageLevelForSkinName(&skinName);
         }
 
         RPawnPlayer DoSwitch()

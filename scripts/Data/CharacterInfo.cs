@@ -1,3 +1,5 @@
+using BmSDK;
+
 namespace Samuil1337.CharacterSwapping.Data
 {
     /// <summary>
@@ -70,11 +72,23 @@ namespace Samuil1337.CharacterSwapping.Data
         }
 
         /// <summary>
+        /// Gets the saved damage level of the active skin for this character.
+        /// </summary>
+        public unsafe int SkinDamageLevel
+        {
+            get
+            {
+                using var skinName = new FString(SkinId);
+                return GameFunctions.GetSavedDamageLevelForSkinName(&skinName);
+            }
+        }
+
+        /// <summary>
         /// Gets the name of the package which contains the corresponding skin.
         /// </summary>
         public string GetSkinPkg(int damageLevel)
         {
-            if (damageLevel != 0)
+            if (damageLevel > 0)
             {
                 return BuildPkg(SkinId + $"_{damageLevel}");
             }
