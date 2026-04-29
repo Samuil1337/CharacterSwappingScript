@@ -10,11 +10,11 @@ This is core functionallity that I want to build into my mod:
 ## Performance
 These are performance improvements I could add to lower lags during switches:
 - [ ] Keep inactive **character assets alive**
-- [ ] Properly **destroy FStrings** after native calls
+- [x] Properly **destroy FStrings** after native calls
 
 ## Misc
 Some small improvements I want to do:
-- [ ] Migrate to new **Mod format**
+- [x] Migrate to new **Mod format**
 
 ## Bugs
 Problems with the code live in the issues tab on GitHub.
