@@ -72,8 +72,8 @@ namespace Samuil1337.CharacterSwapping
                 return;
 
             var sc = new SwitchContext(
-                Characters[character],
                 Game.GetPlayerController(),
+                Characters[character],
                 _spawnEffectTemplate,
                 s_spawnEffectScale
             );

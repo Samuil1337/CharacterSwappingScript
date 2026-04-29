@@ -11,13 +11,14 @@ namespace Samuil1337.CharacterSwapping.State
         static bool AreValid(params GameObject?[] objects) =>
             objects.All(obj => obj != null && obj.IsValid);
 
+        public RPlayerController Rpc { get; }
+        public RPawnPlayer Rpp { get; private set; }
+        public WorldInfo Wi { get; } = Game.GetWorldInfo();
+        public RGameInfo Rgi { get; } = Game.GetGameInfo();
+        public RGameRI Gri { get; } = Game.GetGameRI();
+        public RPersistentData PData { get; } = Game.GetPersistentData();
+
         readonly CharacterInfo _character;
-        readonly RPlayerController _rpc;
-        RPawnPlayer _rpp;
-        readonly WorldInfo _wi;
-        readonly RGameInfo _rgi;
-        readonly RGameRI _gri;
-        readonly RPersistentData _pData;
         readonly ParticleSystem? _effectTemplate;
         readonly float _effectScale;
 
@@ -31,19 +32,15 @@ namespace Samuil1337.CharacterSwapping.State
         /// May be null to disable.</param>
         /// <param name="effectScale">Scale of the effect if enabled</param>
         internal SwitchContext(
-            CharacterInfo character,
             RPlayerController rpc,
+            CharacterInfo character,
             ParticleSystem? effectTemplate,
             float effectScale
         )
         {
+            Rpc = rpc;
+            Rpp = rpc.CombatPawn;
             _character = character;
-            _rpc = rpc;
-            _rpp = rpc.CombatPawn;
-            _wi = Game.GetWorldInfo();
-            _rgi = Game.GetGameInfo();
-            _gri = Game.GetGameRI();
-            _pData = Game.GetPersistentData();
             _effectTemplate = effectTemplate;
             _effectScale = effectScale;
         }
@@ -51,13 +48,13 @@ namespace Samuil1337.CharacterSwapping.State
         internal bool TryPerformSwitch()
         {
             // Make sure all instances are safe to use
-            if (!AreValid(_rpc, _rpp, _wi, _rgi, _gri, _pData))
+            if (!AreValid(Rpc, Rpp, Wi, Rgi, Gri, PData))
             {
                 return false;
             }
 
             // Make sure switch is necessary
-            if (_rpp.CharacterName == _character.CharacterName)
+            if (Rpp.CharacterName == _character.CharacterName)
             {
                 return false;
             }
@@ -68,14 +65,14 @@ namespace Samuil1337.CharacterSwapping.State
                 return false;
             }
 
-            var dto = PlayerState.FromGameState(_rpc, _pData);
+            var dto = PlayerState.FromGameState(Rpc, PData);
             LoadAssets();
             DoSwitch();
-            dto.ApplyToGameState(_rpc, _pData);
+            dto.ApplyToGameState(Rpc, PData);
 
             if (_effectTemplate is not null)
             {
-                PlayTransitionEffect(_rpp.Location);
+                PlayTransitionEffect(Rpp.Location);
             }
 
             return true;
@@ -83,17 +80,17 @@ namespace Samuil1337.CharacterSwapping.State
 
         bool IsSafeToSwitch()
         {
-            if (_rpc.bCinematicMode || _rpc.bForceCinematicMode)
+            if (Rpc.bCinematicMode || Rpc.bForceCinematicMode)
                 return false;
-            if (_rpc.ActiveCinematicMode is not null)
+            if (Rpc.ActiveCinematicMode is not null)
                 return false;
-            if (_rpc.BatmanCutscene is not null)
+            if (Rpc.BatmanCutscene is not null)
                 return false;
-            if (_rpc.IsPlayingFullScreenMovie())
+            if (Rpc.IsPlayingFullScreenMovie())
                 return false;
-            if (_rpc.IsLookInputIgnored())
+            if (Rpc.IsLookInputIgnored())
                 return false;
-            if (_rpc.IsMoveInputIgnored())
+            if (Rpc.IsMoveInputIgnored())
                 return false;
 
             return true;
@@ -101,29 +98,29 @@ namespace Samuil1337.CharacterSwapping.State
 
         void LoadAssets()
         {
-            var basePkg = _rgi.bStoryDLC ? _character.DlcBasePkg : _character.BasePkg;
+            var basePkg = Rgi.bStoryDLC ? _character.DlcBasePkg : _character.BasePkg;
             Game.LoadPackage(basePkg);
 
             var damageLevel = _character.SkinDamageLevel;
             var skinPkg = _character.GetSkinPkg(damageLevel);
             Game.LoadPackage(skinPkg);
 
-            _rgi.LoadPC(_character.SkinId, damageLevel);
+            Rgi.LoadPC(_character.SkinId, damageLevel);
         }
 
         void DoSwitch()
         {
             // Switch character
-            var act = new RSeqAct_SwitchPlayerCharacter(_wi)
+            var act = new RSeqAct_SwitchPlayerCharacter(Wi)
             {
                 CharacterName = _character.CharacterName,
-                PlayerStartPoint = Game.SpawnActor<PlayerStart>(_rpp.Location, _rpp.Rotation),
+                PlayerStartPoint = Game.SpawnActor<PlayerStart>(Rpp.Location, Rpp.Rotation),
             };
-            _rpc.PrepareForPlayerSwitch(); // Resets HUD
-            act.RestartPlayer(_rpc); // Performs switch of Pawn
-            _rpp.Destroy(); // Removes old RPawnPlayer
+            Rpc.PrepareForPlayerSwitch(); // Resets HUD
+            act.RestartPlayer(Rpc); // Performs switch of Pawn
+            Rpp.Destroy(); // Removes old RPawnPlayer
 
-            _rpp = _rpc.CombatPawn;
+            Rpp = Rpc.CombatPawn;
         }
 
         void PlayTransitionEffect(Vector3 location)
