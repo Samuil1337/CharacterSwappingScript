@@ -79,7 +79,7 @@ namespace Samuil1337.CharacterSwapping
             );
 
             // Apply swapping cooldown
-            if (sc.PerformSwitch() && s_swapCooldownEnabled)
+            if (sc.TryPerformSwitch() && s_swapCooldownEnabled)
             {
                 _swapCooldownTimer = s_swapCooldown;
             }

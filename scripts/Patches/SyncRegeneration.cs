@@ -92,11 +92,14 @@ namespace Samuil1337.CharacterSwapping.Patches
 
         int GetUnlockedArmorLevel(PlayableCharacter character, EArmourType armorType)
         {
+            const int cwArmorLevels = 2;
+            const int armorLevels = 4;
+
             var armorName = armorType is EArmourType.EA_ArmourMelee ? "Melee" : "Ballistic";
 
             if (character is PlayableCharacter.Catwoman)
             {
-                for (int i = 2; i > 0; --i)
+                for (int i = cwArmorLevels; i > 0; --i)
                 {
                     if (Owner.HasUpgrade($"Unlocked_Cw{armorName}Armour{i}"))
                     {
@@ -106,7 +109,7 @@ namespace Samuil1337.CharacterSwapping.Patches
             }
             else if (character is not PlayableCharacter.BruceWayne)
             {
-                for (int i = 4; i > 0; --i)
+                for (int i = armorLevels; i > 0; --i)
                 {
                     if (Owner.HasUpgrade($"Unlocked_{armorName}Armour{i}"))
                     {

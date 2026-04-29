@@ -23,7 +23,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         /// <summary>
         /// Initializes a switch context. To perform the actual switch
-        /// use <see cref="PerformSwitch"/>.
+        /// use <see cref="TryPerformSwitch"/>.
         /// </summary>
         /// <param name="character">Character to switch to</param>
         /// <param name="rpc">Controller to modify</param>
@@ -48,7 +48,7 @@ namespace Samuil1337.CharacterSwapping.State
             _effectScale = effectScale;
         }
 
-        internal bool PerformSwitch()
+        internal bool TryPerformSwitch()
         {
             // Make sure all instances are safe to use
             if (!AreValid(_rpc, _rpp, _wi, _rgi, _gri, _pData))
@@ -70,7 +70,7 @@ namespace Samuil1337.CharacterSwapping.State
 
             var dto = PlayerState.FromGameState(_rpc, _pData);
             LoadAssets();
-            _rpp = DoSwitch();
+            DoSwitch();
             dto.ApplyToRpc(_rpc, _pData);
 
             if (_effectTemplate is not null)
@@ -111,7 +111,7 @@ namespace Samuil1337.CharacterSwapping.State
             _rgi.LoadPC(_character.SkinId, damageLevel);
         }
 
-        RPawnPlayer DoSwitch()
+        void DoSwitch()
         {
             // Switch character
             var act = new RSeqAct_SwitchPlayerCharacter(_wi)
@@ -123,7 +123,7 @@ namespace Samuil1337.CharacterSwapping.State
             act.RestartPlayer(_rpc); // Performs switch of Pawn
             _rpp.Destroy(); // Removes old RPawnPlayer
 
-            return _rpc.CombatPawn;
+            _rpp = _rpc.CombatPawn;
         }
 
         void PlayTransitionEffect(Vector3 location)
