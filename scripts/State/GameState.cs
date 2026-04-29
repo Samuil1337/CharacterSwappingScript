@@ -2,6 +2,9 @@ using Samuil1337.CharacterSwapping.State.Player;
 
 namespace Samuil1337.CharacterSwapping.State
 {
+    /// <summary>
+    /// Contract for DTO's copying over game state between switches.
+    /// </summary>
     interface IStateComponent
     {
         void CaptureState(SwitchContext ctx);
@@ -9,8 +12,9 @@ namespace Samuil1337.CharacterSwapping.State
     }
 
     /// <summary>
-    /// Represents an immutable Data Transfer Object of a player's state, including position, health and animations.
-    /// Use this record to snapshot and restore a player's state when switching characters.
+    /// Represents a Data Transfer Object of the entire game state, including player position,
+    /// health and animations. Use this record to snapshot and restore a player's state
+    /// when switching characters.
     /// </summary>
     sealed class GameState : IStateComponent
     {

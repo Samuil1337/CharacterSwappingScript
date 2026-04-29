@@ -6,6 +6,10 @@ using Samuil1337.CharacterSwapping.Data;
 
 namespace Samuil1337.CharacterSwapping.State
 {
+    /// <summary>
+    /// Represents the action of switching the character.
+    /// Created each time a character swap is requested.
+    /// </summary>
     sealed class SwitchContext
     {
         static bool AreValid(params GameObject?[] objects) =>
@@ -26,8 +30,8 @@ namespace Samuil1337.CharacterSwapping.State
         /// Initializes a switch context. To perform the actual switch
         /// use <see cref="TryPerformSwitch"/>.
         /// </summary>
-        /// <param name="character">Character to switch to</param>
         /// <param name="rpc">Controller to modify</param>
+        /// <param name="character">Character to switch to</param>
         /// <param name="effectTemplate">Effect to play on switch on the RPP.
         /// May be null to disable.</param>
         /// <param name="effectScale">Scale of the effect if enabled</param>
@@ -45,6 +49,11 @@ namespace Samuil1337.CharacterSwapping.State
             _effectScale = effectScale;
         }
 
+        /// <summary>
+        /// Switches the current playable character if possible.
+        /// </summary>
+        /// <returns>True, if the switch was successful;
+        /// false, if the switch was unsuccessful</returns>
         internal bool TryPerformSwitch()
         {
             // Make sure all instances are safe to use
@@ -98,6 +107,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         void LoadAssets()
         {
+            // Load packages manually because LoadPC does it async causing race condition
             var basePkg = Rgi.bStoryDLC ? _character.DlcBasePkg : _character.BasePkg;
             Game.LoadPackage(basePkg);
 
@@ -105,6 +115,7 @@ namespace Samuil1337.CharacterSwapping.State
             var skinPkg = _character.GetSkinPkg(damageLevel);
             Game.LoadPackage(skinPkg);
 
+            // Set PlayableCharacters[0] to target and populate assets in struct
             Rgi.LoadPC(_character.SkinId, damageLevel);
         }
 

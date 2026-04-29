@@ -30,7 +30,7 @@ namespace Samuil1337.CharacterSwapping.State.Player
 
         public void ApplyState(SwitchContext ctx)
         {
-            // Transfer health in save data
+            // Transfer health into save data
             var pData = ctx.PData;
             pData.PlayerHealth = _health;
             pData.MeleeArmour = _meleeArmor;
