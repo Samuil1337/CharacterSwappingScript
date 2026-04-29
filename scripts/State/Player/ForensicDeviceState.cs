@@ -18,8 +18,6 @@ namespace Samuil1337.CharacterSwapping.State.Player
         public void ApplyState(SwitchContext ctx)
         {
             var rpc = ctx.Rpc;
-            rpc.bInvestigateMode = _isInvestigateMode;
-
             if (rpc.CurrentForensicsDevice is null)
             {
                 return;
@@ -42,6 +40,11 @@ namespace Samuil1337.CharacterSwapping.State.Player
                     // Method ensures that the actor is actually a jammer
                     device.AddActorToJammerList(villain);
                 }
+            }
+
+            if (device.bCanUseForensicsDeviceDirectly)
+            {
+                rpc.bInvestigateMode = _isInvestigateMode;
             }
         }
     }
