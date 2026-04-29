@@ -1,2 +1,8 @@
 name = "CharacterSwappingScript"
 description = "A mod allowing players to switch characters during gameplay"
+
+[config]
+spawn_effect_enabled = true # enable smoke particles on switch
+spawn_effect_scale = 1.0 # size of smoke cloud
+swap_cooldown_enabled = true # enable cooldown between swaps
+swap_cooldown_value = 5.0 # cooldown period in seconds

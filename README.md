@@ -20,4 +20,4 @@ Start the modded game instance through the usual means and just press the **func
 - Bruce Wayne (**F5**)
 
 ## How to configure
-All the configuration options are constants at the top of **CharacterSwappingScript.cs**, with inline documentation explaining what each variable does. Though, it is recommended to stick to the defaults for the smoothest experience.
+All the configuration options are in the **mod.toml** file, with inline documentation explaining what each variable does. Though, it is recommended to stick to the defaults for the smoothest experience.
