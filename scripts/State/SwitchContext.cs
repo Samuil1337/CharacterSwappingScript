@@ -71,7 +71,7 @@ namespace Samuil1337.CharacterSwapping.State
             var dto = PlayerState.FromGameState(_rpc, _pData);
             LoadAssets();
             DoSwitch();
-            dto.ApplyToRpc(_rpc, _pData);
+            dto.ApplyToGameState(_rpc, _pData);
 
             if (_effectTemplate is not null)
             {

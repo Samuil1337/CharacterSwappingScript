@@ -1,6 +1,7 @@
 using System.Numerics;
 using BmSDK;
 using BmSDK.BmGame;
+using BmSDK.Engine;
 using static BmSDK.BmGame.RPawnPlayer;
 
 namespace Samuil1337.CharacterSwapping.State
@@ -25,12 +26,13 @@ namespace Samuil1337.CharacterSwapping.State
         int CwMeleeArmor,
         int CwBallisticArmor,
         // Detective vision
-        bool XRay
+        bool XRay,
+        Actor[]? JammingActors
     )
     {
         /// <summary>
         /// Creates a new DTO based on the specified RPC and persistent data. Can be applied
-        /// after a switch using <see cref="ApplyToRpc(RPlayerController, RPersistentData)"/>
+        /// after a switch using <see cref="ApplyToGameState(RPlayerController, RPersistentData)"/>
         /// </summary>
         /// <param name="rpc">Controller to snapshot before the character switch.</param>
         /// <param name="pData">PersistentData to snapshot because some data is invalidated</param>
@@ -58,7 +60,8 @@ namespace Samuil1337.CharacterSwapping.State
                 BallisticArmor: pData.BallisticArmour,
                 CwMeleeArmor: pData.CWMeleeArmour,
                 CwBallisticArmor: pData.CWBallisticArmour,
-                XRay: rpc.bInvestigateMode
+                XRay: rpc.bInvestigateMode,
+                JammingActors: rpc.CurrentForensicsDevice?.JammingActors?.ToArray()
             );
         }
 
@@ -68,7 +71,7 @@ namespace Samuil1337.CharacterSwapping.State
         /// </summary>
         /// <param name="rpc">The RPC to restore the state of</param>
         /// <param name="pData">The persistent data object containing player health and armor values.</param>
-        public void ApplyToRpc(RPlayerController rpc, RPersistentData pData)
+        public void ApplyToGameState(RPlayerController rpc, RPersistentData pData)
         {
             var rpp = rpc.CombatPawn;
 
@@ -112,8 +115,20 @@ namespace Samuil1337.CharacterSwapping.State
 
         void ApplyDetectiveVision(RPlayerController rpc)
         {
+            if (rpc.CurrentForensicsDevice is null)
+            {
+                return;
+            }
+
+            // Add Jammers
+            var device = rpc.CurrentForensicsDevice;
+            if (JammingActors is not null)
+            {
+                device.JammingActors = [.. JammingActors];
+            }
+
             // Transfer Detective Mode state
-            if (rpc.CurrentForensicsDevice?.bCanUseForensicsDeviceDirectly ?? false)
+            if (device.bCanUseForensicsDeviceDirectly)
             {
                 rpc.bInvestigateMode = XRay;
             }
