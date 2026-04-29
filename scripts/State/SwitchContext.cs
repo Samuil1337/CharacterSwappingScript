@@ -65,10 +65,10 @@ namespace Samuil1337.CharacterSwapping.State
                 return false;
             }
 
-            var dto = PlayerState.FromGameState(Rpc, PData);
+            var dto = new GameState(this);
             LoadAssets();
             DoSwitch();
-            dto.ApplyToGameState(Rpc, PData);
+            dto.ApplyState(this);
 
             if (_effectTemplate is not null)
             {
