@@ -21,11 +21,19 @@ namespace Samuil1337.CharacterSwapping
 
         public CharacterSwappingScript()
         {
-            var config = (TomlTable)Mod.Config["config"];
-            _spawnEffectEnabled = Convert.ToBoolean(config["spawn_effect_enabled"]);
-            _spawnEffectScale = Convert.ToSingle(config["spawn_effect_scale"]);
-            _swapCooldownEnabled = Convert.ToBoolean(config["swap_cooldown_enabled"]);
-            _swapCooldownValue = Convert.ToSingle(config["swap_cooldown_value"]);
+            try
+            {
+                var config = (TomlTable)Mod.Config["config"];
+                _spawnEffectEnabled = Convert.ToBoolean(config["spawn_effect_enabled"]);
+                _spawnEffectScale = Convert.ToSingle(config["spawn_effect_scale"]);
+                _swapCooldownEnabled = Convert.ToBoolean(config["swap_cooldown_enabled"]);
+                _swapCooldownValue = Convert.ToSingle(config["swap_cooldown_value"]);
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Encoutered an error parsing the config: " + ex);
+                throw;
+            }
         }
 
         public override void Main()
