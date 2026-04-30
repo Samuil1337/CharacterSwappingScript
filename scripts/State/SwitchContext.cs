@@ -30,8 +30,9 @@ namespace Samuil1337.CharacterSwapping.State
         public RGameInfo Rgi { get; } = Game.GetGameInfo();
         public RGameRI Gri { get; } = Game.GetGameRI();
         public RPersistentData PData { get; } = Game.GetPersistentData();
+        public CharacterInfo OldCharacter { get; }
+        public CharacterInfo NewCharacter { get; }
 
-        readonly CharacterInfo _character;
         readonly ParticleSystem? _effectTemplate;
         readonly float _effectScale;
 
@@ -53,7 +54,8 @@ namespace Samuil1337.CharacterSwapping.State
         {
             Rpc = rpc;
             Rpp = rpc.CombatPawn;
-            _character = character;
+            OldCharacter = CharacterRegistry.ByPawn(Rpp)!;
+            NewCharacter = character;
             _effectTemplate = effectTemplate;
             _effectScale = effectScale;
         }
@@ -72,7 +74,7 @@ namespace Samuil1337.CharacterSwapping.State
             }
 
             // Make sure switch is necessary
-            if (Rpp.CharacterName == _character.CharacterName)
+            if (OldCharacter == NewCharacter)
             {
                 return false;
             }
@@ -117,15 +119,15 @@ namespace Samuil1337.CharacterSwapping.State
         void LoadAssets()
         {
             // Load packages manually because LoadPC does it async causing race condition
-            var basePkg = Rgi.bStoryDLC ? _character.DlcBasePkg : _character.BasePkg;
+            var basePkg = Rgi.bStoryDLC ? NewCharacter.DlcBasePkg : NewCharacter.BasePkg;
             Game.LoadPackage(basePkg);
 
-            var damageLevel = _character.SkinDamageLevel;
-            var skinPkg = _character.GetSkinPkg(damageLevel);
+            var damageLevel = NewCharacter.SkinDamageLevel;
+            var skinPkg = NewCharacter.GetSkinPkg(damageLevel);
             Game.LoadPackage(skinPkg);
 
             // Set PlayableCharacters[0] to target and populate assets in struct
-            Rgi.LoadPC(_character.SkinId, damageLevel);
+            Rgi.LoadPC(NewCharacter.SkinId, damageLevel);
         }
 
         void DoSwitch()
@@ -133,7 +135,7 @@ namespace Samuil1337.CharacterSwapping.State
             // Switch character
             var act = new RSeqAct_SwitchPlayerCharacter(Wi)
             {
-                CharacterName = _character.CharacterName,
+                CharacterName = NewCharacter.CharacterName,
                 PlayerStartPoint = Game.SpawnActor<PlayerStart>(Rpp.Location, Rpp.Rotation),
             };
             Rpc.PrepareForPlayerSwitch(); // Resets HUD
