@@ -1,3 +1,5 @@
+using BmSDK.BmGame;
+
 namespace Samuil1337.CharacterSwapping.Data
 {
     /// <summary>
@@ -21,7 +23,7 @@ namespace Samuil1337.CharacterSwapping.Data
         /// Provides a read-only mapping of each playable character to its associated character information.
         /// This is useful for getting data necessary for switching characters.
         /// </summary>
-        static readonly Dictionary<PlayableCharacter, CharacterInfo> Characters = new()
+        static readonly Dictionary<PlayableCharacter, CharacterInfo> s_characters = new()
         {
             [PlayableCharacter.BruceWayne] = new(
                 BaseId: PlayableCharacter.BruceWayne,
@@ -51,6 +53,25 @@ namespace Samuil1337.CharacterSwapping.Data
             ),
         };
 
-        internal static CharacterInfo ByEnum(PlayableCharacter character) => Characters[character];
+        static readonly Dictionary<string, CharacterInfo> s_charactersByName =
+            s_characters.ToDictionary(kvp => kvp.Value.CharacterName, kvp => kvp.Value);
+
+        internal static CharacterInfo ByEnum(PlayableCharacter character) =>
+            s_characters[character];
+
+        internal static CharacterInfo? ByName(string? name)
+        {
+            if (name is not null)
+            {
+                if (s_charactersByName.TryGetValue(name, out var result))
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        internal static CharacterInfo? ByPawn(RPawnPlayer? rpp) => ByName(rpp?.CharacterName);
     }
 }
