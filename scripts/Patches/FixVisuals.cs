@@ -1,5 +1,5 @@
 using BmSDK.BmGame;
-using static Samuil1337.CharacterSwapping.Data.CharacterRegistry;
+using Samuil1337.CharacterSwapping.Data;
 
 namespace Samuil1337.CharacterSwapping.Patches
 {
@@ -9,7 +9,7 @@ namespace Samuil1337.CharacterSwapping.Patches
         [Redirect(typeof(RPersistentData), nameof(RPersistentData.FinishedCatwomanJewellery))]
         static bool FinishedCatwomanJewellery(RPersistentData self)
         {
-            var catwomanName = Characters[Data.PlayableCharacter.Catwoman].CharacterName;
+            var catwomanName = CharacterRegistry.ByEnum(PlayableCharacter.Catwoman).CharacterName;
             if (Game.GetPlayerPawn().CharacterName != catwomanName)
             {
                 return true;

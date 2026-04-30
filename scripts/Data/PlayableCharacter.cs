@@ -21,35 +21,36 @@ namespace Samuil1337.CharacterSwapping.Data
         /// Provides a read-only mapping of each playable character to its associated character information.
         /// This is useful for getting data necessary for switching characters.
         /// </summary>
-        internal static readonly IReadOnlyDictionary<PlayableCharacter, CharacterInfo> Characters =
-            new Dictionary<PlayableCharacter, CharacterInfo>
-            {
-                [PlayableCharacter.BruceWayne] = new(
-                    BaseId: PlayableCharacter.BruceWayne,
-                    CharacterName: "Bruce_Wayne",
-                    Base: "Playable_BruceWayne"
-                ),
-                [PlayableCharacter.Batman] = new(
-                    BaseId: PlayableCharacter.Batman,
-                    CharacterName: "Batman",
-                    Base: "Playable_Batman"
-                ),
-                [PlayableCharacter.Catwoman] = new(
-                    BaseId: PlayableCharacter.Catwoman,
-                    CharacterName: "Catwoman",
-                    Base: "Playable_Catwoman"
-                ),
-                [PlayableCharacter.Robin] = new(
-                    BaseId: PlayableCharacter.Robin,
-                    CharacterName: "Robin",
-                    Base: "Playable_Robin",
-                    DlcBase: "Playable_RobinStoryDLC"
-                ),
-                [PlayableCharacter.Nightwing] = new(
-                    BaseId: PlayableCharacter.Nightwing,
-                    CharacterName: "Nightwing",
-                    Base: "Playable_Nightwing"
-                ),
-            };
+        static readonly Dictionary<PlayableCharacter, CharacterInfo> Characters = new()
+        {
+            [PlayableCharacter.BruceWayne] = new(
+                BaseId: PlayableCharacter.BruceWayne,
+                CharacterName: "Bruce_Wayne",
+                Base: "Playable_BruceWayne"
+            ),
+            [PlayableCharacter.Batman] = new(
+                BaseId: PlayableCharacter.Batman,
+                CharacterName: "Batman",
+                Base: "Playable_Batman"
+            ),
+            [PlayableCharacter.Catwoman] = new(
+                BaseId: PlayableCharacter.Catwoman,
+                CharacterName: "Catwoman",
+                Base: "Playable_Catwoman"
+            ),
+            [PlayableCharacter.Robin] = new(
+                BaseId: PlayableCharacter.Robin,
+                CharacterName: "Robin",
+                Base: "Playable_Robin",
+                DlcBase: "Playable_RobinStoryDLC"
+            ),
+            [PlayableCharacter.Nightwing] = new(
+                BaseId: PlayableCharacter.Nightwing,
+                CharacterName: "Nightwing",
+                Base: "Playable_Nightwing"
+            ),
+        };
+
+        internal static CharacterInfo ByEnum(PlayableCharacter character) => Characters[character];
     }
 }

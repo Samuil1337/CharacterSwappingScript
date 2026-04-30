@@ -1,7 +1,6 @@
 using BmSDK.Engine;
 using Samuil1337.CharacterSwapping.Data;
 using Samuil1337.CharacterSwapping.State;
-using static Samuil1337.CharacterSwapping.Data.CharacterRegistry;
 
 namespace Samuil1337.CharacterSwapping
 {
@@ -94,7 +93,7 @@ namespace Samuil1337.CharacterSwapping
 
             var sc = new SwitchContext(
                 Game.GetPlayerController(),
-                Characters[character],
+                CharacterRegistry.ByEnum(character),
                 _spawnEffectTemplate,
                 _spawnEffectScale
             );
