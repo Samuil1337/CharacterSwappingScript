@@ -1,7 +1,7 @@
 using System.Numerics;
 using BmSDK;
 
-namespace Samuil1337.CharacterSwapping.State.Player
+namespace Samuil1337.CharacterSwapping.State
 {
     sealed class MovementState : IStateComponent
     {

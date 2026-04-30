@@ -3,10 +3,18 @@ using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
 using Samuil1337.CharacterSwapping.Data;
-using Samuil1337.CharacterSwapping.State.Player;
 
 namespace Samuil1337.CharacterSwapping.State
 {
+    /// <summary>
+    /// Contract for DTO's copying over game state between switches.
+    /// </summary>
+    interface IStateComponent
+    {
+        void CaptureState(SwitchContext ctx);
+        void ApplyState(SwitchContext ctx);
+    }
+
     /// <summary>
     /// Represents the action of switching the character.
     /// Created each time a character swap is requested.

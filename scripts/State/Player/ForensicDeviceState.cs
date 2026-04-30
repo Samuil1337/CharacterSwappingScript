@@ -1,7 +1,7 @@
 using BmSDK.BmGame;
 using BmSDK.Engine;
 
-namespace Samuil1337.CharacterSwapping.State.Player
+namespace Samuil1337.CharacterSwapping.State
 {
     sealed class ForensicDeviceState : IStateComponent
     {

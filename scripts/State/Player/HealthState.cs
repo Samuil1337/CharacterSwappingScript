@@ -1,6 +1,6 @@
 using static BmSDK.BmGame.RPawnPlayer;
 
-namespace Samuil1337.CharacterSwapping.State.Player
+namespace Samuil1337.CharacterSwapping.State
 {
     sealed class HealthState : IStateComponent
     {
