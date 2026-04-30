@@ -1,24 +1,33 @@
 namespace Samuil1337.CharacterSwapping.State
 {
     /// <summary>
+    /// Contract for DTO's copying over game state between switches.
+    /// </summary>
+    interface IStateComponent
+    {
+        void CaptureState(SwitchContext ctx);
+        void ApplyState(SwitchContext ctx);
+    }
+
+    /// <summary>
     /// Represents a Data Transfer Object of the entire game state, including player position,
     /// health and animations. Use this record to snapshot and restore a player's state
     /// when switching characters.
     /// </summary>
-    sealed class PlayerState : IStateComponent
+    sealed class GameState : IStateComponent
     {
-        readonly List<IStateComponent> _stateComponents =
+        readonly IStateComponent[] _playerComponents =
         [
             new MovementState(),
             new HealthState(),
             new ForensicDeviceState(),
         ];
 
-        internal PlayerState(SwitchContext ctx) => CaptureState(ctx);
+        internal GameState(SwitchContext ctx) => CaptureState(ctx);
 
         public void CaptureState(SwitchContext ctx)
         {
-            foreach (var component in _stateComponents)
+            foreach (var component in _playerComponents)
             {
                 component.CaptureState(ctx);
             }
@@ -26,7 +35,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         public void ApplyState(SwitchContext ctx)
         {
-            foreach (var component in _stateComponents)
+            foreach (var component in _playerComponents)
             {
                 component.ApplyState(ctx);
             }

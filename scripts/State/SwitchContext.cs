@@ -7,15 +7,6 @@ using Samuil1337.CharacterSwapping.Data;
 namespace Samuil1337.CharacterSwapping.State
 {
     /// <summary>
-    /// Contract for DTO's copying over game state between switches.
-    /// </summary>
-    interface IStateComponent
-    {
-        void CaptureState(SwitchContext ctx);
-        void ApplyState(SwitchContext ctx);
-    }
-
-    /// <summary>
     /// Represents the action of switching the character.
     /// Created each time a character swap is requested.
     /// </summary>
@@ -85,7 +76,7 @@ namespace Samuil1337.CharacterSwapping.State
                 return false;
             }
 
-            var dto = new PlayerState(this);
+            var dto = new GameState(this);
             LoadAssets();
             DoSwitch();
             dto.ApplyState(this);
