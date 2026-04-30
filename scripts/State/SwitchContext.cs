@@ -3,6 +3,7 @@ using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
 using Samuil1337.CharacterSwapping.Data;
+using Samuil1337.CharacterSwapping.State.Player;
 
 namespace Samuil1337.CharacterSwapping.State
 {
@@ -74,7 +75,7 @@ namespace Samuil1337.CharacterSwapping.State
                 return false;
             }
 
-            var dto = new GameState(this);
+            var dto = new PlayerState(this);
             LoadAssets();
             DoSwitch();
             dto.ApplyState(this);

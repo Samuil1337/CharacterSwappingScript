@@ -1,6 +1,4 @@
-using Samuil1337.CharacterSwapping.State.Player;
-
-namespace Samuil1337.CharacterSwapping.State
+namespace Samuil1337.CharacterSwapping.State.Player
 {
     /// <summary>
     /// Contract for DTO's copying over game state between switches.
@@ -16,7 +14,7 @@ namespace Samuil1337.CharacterSwapping.State
     /// health and animations. Use this record to snapshot and restore a player's state
     /// when switching characters.
     /// </summary>
-    sealed class GameState : IStateComponent
+    sealed class PlayerState : IStateComponent
     {
         readonly List<IStateComponent> _stateComponents =
         [
@@ -25,7 +23,7 @@ namespace Samuil1337.CharacterSwapping.State
             new ForensicDeviceState(),
         ];
 
-        internal GameState(SwitchContext ctx) => CaptureState(ctx);
+        internal PlayerState(SwitchContext ctx) => CaptureState(ctx);
 
         public void CaptureState(SwitchContext ctx)
         {
