@@ -93,7 +93,7 @@ namespace Samuil1337.CharacterSwapping
 
             var sc = new SwitchContext(
                 Game.GetPlayerController(),
-                CharacterRegistry.ByEnum(character),
+                character,
                 _spawnEffectTemplate,
                 _spawnEffectScale
             );

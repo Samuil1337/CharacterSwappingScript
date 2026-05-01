@@ -38,7 +38,7 @@ namespace Samuil1337.CharacterSwapping.State
         /// <param name="effectScale">Scale of the effect if enabled</param>
         internal SwitchContext(
             RPlayerController rpc,
-            CharacterInfo character,
+            PlayableCharacter character,
             ParticleSystem? effectTemplate,
             float effectScale
         )
@@ -46,7 +46,7 @@ namespace Samuil1337.CharacterSwapping.State
             Rpc = rpc;
             Rpp = rpc.CombatPawn;
             OldCharacter = CharacterRegistry.ByPawn(Rpp)!;
-            NewCharacter = character;
+            NewCharacter = CharacterRegistry.ByEnum(character);
             _effectTemplate = effectTemplate;
             _effectScale = effectScale;
         }
