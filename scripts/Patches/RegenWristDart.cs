@@ -45,8 +45,8 @@ namespace Samuil1337.CharacterSwapping.Patches
 
         void ScheduleIncrementAmmo()
         {
-            _replenishing = true;
             _cooldown = s_rechargeTime;
+            _replenishing = true;
         }
 
         public override void OnTick()
@@ -64,6 +64,11 @@ namespace Samuil1337.CharacterSwapping.Patches
 
         void IncrementAmmo()
         {
+            if (!Game.GetGameRI().IsOverworldGameplay())
+            {
+                return;
+            }
+
             if (Owner.Ammo < Owner.MaxAmmo)
             {
                 Owner.Ammo++;
