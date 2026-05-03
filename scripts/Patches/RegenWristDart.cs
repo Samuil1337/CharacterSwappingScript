@@ -36,15 +36,17 @@ namespace Samuil1337.CharacterSwapping.Patches
         {
             if (Game.GetGameRI().IsOverworldGameplay())
             {
-                if (!_replenishing)
-                {
-                    ScheduleIncrementAmmo();
-                }
+                ScheduleIncrementAmmo();
             }
         }
 
         void ScheduleIncrementAmmo()
         {
+            if (_replenishing)
+            {
+                return;
+            }
+
             _cooldown = s_rechargeTime;
             _replenishing = true;
         }
@@ -95,6 +97,18 @@ namespace Samuil1337.CharacterSwapping.Patches
             Owner.Ammo = Owner.MaxAmmo;
             Owner.NumHeadShotsInRound = 0;
             Owner.UpdateGadgetHUDParams();
+        }
+
+        [ComponentRedirect(nameof(RNightwingWristDart.OnLevelChange))]
+        void OnLevelChange()
+        {
+            if (Game.GetGameRI().IsOverworldGameplay())
+            {
+                if (Owner.Ammo < Owner.MaxAmmo)
+                {
+                    ScheduleIncrementAmmo();
+                }
+            }
         }
     }
 }
