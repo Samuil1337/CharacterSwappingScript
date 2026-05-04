@@ -20,6 +20,7 @@ namespace Samuil1337.CharacterSwapping.State
         [
             new MovementState(),
             new HealthState(),
+            new GadgetWorldState(),
             new ForensicDeviceState(),
         ];
 
