@@ -5,20 +5,21 @@ namespace Samuil1337.CharacterSwapping.Patches
 {
     static class StopGadgetDestruction
     {
-        [Redirect(typeof(RFreezeSpray), nameof(RFreezeSpray.Destroyed))]
-        static void RFreezeSprayDestroyed(RFreezeSpray self)
-        {
-            Debug.Log("Prevented Freeze Grenade destruction");
-            // Original calls base which does this logic
-            (self.Owner as Pawn)?.InvManager?.RemoveFromInventory(self);
-        }
+        static void BaseDestroyed(RInventoryGadget gadget) =>
+            (gadget.Owner as Pawn)?.InvManager?.RemoveFromInventory(gadget);
 
+        /// <summary>
+        /// The Freeze Granade unfreezes all when it's destroyed which happens
+        /// on character switch. Therefore, we need to immediately call the super function.
+        /// </summary>
+        [Redirect(typeof(RFreezeSpray), nameof(RFreezeSpray.Destroyed))]
+        static void RFreezeSprayDestroyed(RFreezeSpray self) => BaseDestroyed(self);
+
+        /// <summary>
+        /// The Freeze Cluster Granade unfreezes all when it's destroyed which happens
+        /// on character switch. Therefore, we need to immediately call the super function.
         [Redirect(typeof(RFreezeClusterGrenade), nameof(RFreezeClusterGrenade.Destroyed))]
-        static void RFreezeClusterGrenadeDestroyed(RFreezeClusterGrenade self)
-        {
-            Debug.Log("Prevented Freeze Cluster Grenade destruction");
-            // Original calls base which does this logic
-            (self.Owner as Pawn)?.InvManager?.RemoveFromInventory(self);
-        }
+        static void RFreezeClusterGrenadeDestroyed(RFreezeClusterGrenade self) =>
+            BaseDestroyed(self);
     }
 }

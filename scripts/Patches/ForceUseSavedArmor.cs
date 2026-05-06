@@ -2,6 +2,11 @@ using BmSDK.BmScript;
 
 namespace Samuil1337.CharacterSwapping.Patches
 {
+    /// <summary>
+    /// Challenge Map Robin doesn't override the functions which manage saved armor.
+    /// This makes them noop, breaking health transfer and regeneration logic.
+    /// Therefore, we override the behavior ourselves.
+    /// </summary>
     [ScriptComponent(AutoAttach = true)]
     sealed class ForceRobinUseSavedArmor : ScriptComponent<RPawnPlayerRobin>
     {
@@ -19,6 +24,11 @@ namespace Samuil1337.CharacterSwapping.Patches
             Game.GetPersistentData().BallisticArmour = armor;
     }
 
+    /// <summary>
+    /// Nightwing doesn't override the functions which manage saved armor.
+    /// This makes them noop, breaking health transfer and regeneration logic.
+    /// Therefore, we override the behavior ourselves.
+    /// </summary>
     [ScriptComponent(AutoAttach = true)]
     sealed class ForceNightwingUseSavedArmor : ScriptComponent<RPawnPlayerNightwing>
     {

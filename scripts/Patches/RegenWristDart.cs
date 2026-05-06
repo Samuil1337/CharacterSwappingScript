@@ -12,6 +12,10 @@ namespace Samuil1337.CharacterSwapping.Patches
         bool _replenishing;
         float _cooldown;
 
+        /// <summary>
+        /// Overrides function responsible for shooting aimed darts.
+        /// Used to queue dart regeneration.
+        /// </summary>
         [ComponentRedirect(nameof(RNightwingWristDart.FireDart))]
         void FireDart(Rotator rotation, Vector3 position)
         {
@@ -22,6 +26,10 @@ namespace Samuil1337.CharacterSwapping.Patches
             }
         }
 
+        /// <summary>
+        /// Overrides function responsible for shooting darts through the shortcut.
+        /// Used to queue dart regeneration.
+        /// </summary>
         [ComponentRedirect(nameof(RNightwingWristDart.QuickFireDart))]
         void QuickFireDart()
         {
@@ -82,6 +90,10 @@ namespace Samuil1337.CharacterSwapping.Patches
             }
         }
 
+        /// <summary>
+        /// Overrides the function called when loading a new level in interiors.
+        /// This is used to completely restore ammo like other gadgets do.
+        /// </summary>
         [ComponentRedirect(nameof(RNightwingWristDart.OnRoomChange))]
         void OnRoomChange()
         {
@@ -91,6 +103,10 @@ namespace Samuil1337.CharacterSwapping.Patches
             }
         }
 
+        /// <summary>
+        /// Overrides the function used by the CheatManager to max out ammo.
+        /// This function doesn't actually set ammo by default though.
+        /// </summary>
         [ComponentRedirect(nameof(RNightwingWristDart.RestockAmmo))]
         void RestockAmmo()
         {
@@ -99,6 +115,11 @@ namespace Samuil1337.CharacterSwapping.Patches
             Owner.UpdateGadgetHUDParams();
         }
 
+        /// <summary>
+        /// Overrides the function called when a new map is loaded
+        /// (no matter if it's in the overworld or not). Here we schedule
+        /// regeneration if in the overworld.
+        /// </summary>
         [ComponentRedirect(nameof(RNightwingWristDart.OnLevelChange))]
         void OnLevelChange()
         {

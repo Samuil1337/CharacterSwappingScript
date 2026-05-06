@@ -7,6 +7,11 @@ namespace Samuil1337.CharacterSwapping.Patches
     [ScriptComponent(AutoAttach = true)]
     sealed class SyncRegenerationComponent : ScriptComponent<RPawnPlayer>
     {
+        /// <summary>
+        /// Overrides the function responsible for distributing the armor points
+        /// to recover (calculated by the ExperienceAwarded()). This is necessary
+        /// to allow healing unloaded characters.
+        /// </summary>
         [ComponentRedirect(nameof(RPawnPlayer.RestoreArmour))]
         void RestoreArmour(int toRecover)
         {
