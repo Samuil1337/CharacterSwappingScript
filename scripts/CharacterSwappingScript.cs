@@ -7,7 +7,11 @@ namespace Samuil1337.CharacterSwapping
     [Script(name: "CharacterSwappingScript")]
     sealed class CharacterSwappingScript : Script
     {
-        readonly SwitchConfig _switchConfig;
+        public static CharacterSwappingScript Instance { get; private set; } = null!;
+
+        public SwitchConfig SwitchConfig { get; }
+        public SwitchContext? CurrentSwitchContext { get; private set; }
+        public bool IsInSwitch => CurrentSwitchContext is not null;
 
         ParticleSystem? _spawnEffectTemplate;
         float _swapCooldownTimer;
@@ -16,13 +20,15 @@ namespace Samuil1337.CharacterSwapping
         {
             try
             {
-                _switchConfig = SwitchConfig.FromToml(Mod.Config);
+                SwitchConfig = SwitchConfig.FromToml(Mod.Config);
             }
             catch (Exception ex)
             {
                 Debug.LogError("Encoutered an error parsing the config: " + ex);
                 throw;
             }
+
+            Instance ??= this;
         }
 
         public override void Main()
@@ -31,7 +37,7 @@ namespace Samuil1337.CharacterSwapping
             const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
 
             // Load in spawn effect assets if enabled
-            if (_switchConfig.SpawnEffectEnabled)
+            if (SwitchConfig.SpawnEffectEnabled)
             {
                 Game.LoadPackage(SpawnEffectPkg);
                 _spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
@@ -39,9 +45,9 @@ namespace Samuil1337.CharacterSwapping
             }
 
             // Reset timer
-            if (_switchConfig.SwapCooldownEnabled)
+            if (SwitchConfig.SwapCooldownEnabled)
             {
-                _swapCooldownTimer = _switchConfig.SwapCooldownValue;
+                _swapCooldownTimer = SwitchConfig.SwapCooldownValue;
             }
         }
 
@@ -50,7 +56,7 @@ namespace Samuil1337.CharacterSwapping
         public override void OnTick()
         {
             // Counts down timer each tick (which only occurs during gameplay)
-            if (_switchConfig.SwapCooldownEnabled)
+            if (SwitchConfig.SwapCooldownEnabled)
             {
                 _swapCooldownTimer -= Game.GetDeltaTime();
             }
@@ -81,20 +87,34 @@ namespace Samuil1337.CharacterSwapping
         void SwapCharacter(PlayableCharacter character)
         {
             // Make sure swapping is allowed
-            if (_switchConfig.SwapCooldownEnabled && _swapCooldownTimer > 0)
+            if (SwitchConfig.SwapCooldownEnabled && _swapCooldownTimer > 0)
                 return;
 
-            var sc = new SwitchContext(
-                Game.GetPlayerController(),
-                character,
-                _spawnEffectTemplate,
-                _switchConfig.SpawnEffectScale
-            );
-
-            // Apply swapping cooldown
-            if (sc.TryPerformSwitch() && _switchConfig.SwapCooldownEnabled)
+            try
             {
-                _swapCooldownTimer = _switchConfig.SwapCooldownValue;
+                CurrentSwitchContext = new SwitchContext(
+                    Game.GetPlayerController(),
+                    character,
+                    _spawnEffectTemplate,
+                    SwitchConfig.SpawnEffectScale
+                );
+
+                // Apply swapping cooldown
+                if (CurrentSwitchContext.TryPerformSwitch())
+                {
+                    if (SwitchConfig.SwapCooldownEnabled)
+                    {
+                        _swapCooldownTimer = SwitchConfig.SwapCooldownValue;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.LogError("Could not perform switch successfully: " + ex);
+            }
+            finally
+            {
+                CurrentSwitchContext = null;
             }
         }
     }
