@@ -1,4 +1,5 @@
 using BmSDK.BmGame;
+using BmSDK.BmScript;
 using BmSDK.Engine;
 
 namespace Samuil1337.CharacterSwapping.Patches
@@ -21,5 +22,19 @@ namespace Samuil1337.CharacterSwapping.Patches
         [Redirect(typeof(RFreezeClusterGrenade), nameof(RFreezeClusterGrenade.Destroyed))]
         static void RFreezeClusterGrenadeDestroyed(RFreezeClusterGrenade self) =>
             BaseDestroyed(self);
+
+        /// <summary>
+        /// When the RPP is Destroyed() on switch, it exits the WireWalk state which then
+        /// calls BMLeft(), scheduling the destruction of the Line Launcher wire. Therefore,
+        /// we need to cancel this function if a switch is happening.
+        /// </summary>
+        [Redirect(typeof(RHidePoint_LineLauncherWire), nameof(RHidePoint_LineLauncherWire.BMLeft))]
+        static void RHidePoint_LineLauncherWireBMLeft(RHidePoint_LineLauncherWire self)
+        {
+            if (!CharacterSwappingScript.Instance.IsInSwitch)
+            {
+                self.BMLeft();
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.Numerics;
 using BmSDK;
+using BmSDK.Engine;
 
 namespace Samuil1337.CharacterSwapping.State
 {
@@ -12,6 +13,7 @@ namespace Samuil1337.CharacterSwapping.State
         // Pawn position
         Vector3 _rppLoc;
         Rotator _rppRot;
+        Actor? _base; // Vantage point or tight rope
 
         public void CaptureState(SwitchContext ctx)
         {
@@ -19,6 +21,7 @@ namespace Samuil1337.CharacterSwapping.State
             _rpcRot = ctx.Rpc.Rotation;
             _rppLoc = ctx.Rpp.Location;
             _rppRot = ctx.Rpp.Rotation;
+            _base = ctx.Rpp.Base;
         }
 
         public void ApplyState(SwitchContext ctx)
@@ -27,6 +30,7 @@ namespace Samuil1337.CharacterSwapping.State
             ctx.Rpc.SetRotation(_rpcRot);
             ctx.Rpp.SetLocation(_rppLoc);
             ctx.Rpp.SetRotation(_rppRot);
+            ctx.Rpp.SetBase(_base);
         }
     }
 }
