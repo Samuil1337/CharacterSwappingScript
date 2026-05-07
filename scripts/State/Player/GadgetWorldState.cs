@@ -14,6 +14,10 @@ namespace Samuil1337.CharacterSwapping.State
         public void ApplyState(SwitchContext ctx)
         {
             ctx.Rpp.IceRafts = [.. _rafts];
+            foreach (var raft in _rafts)
+            {
+                raft.Player = ctx.Rpp;
+            }
         }
     }
 }
