@@ -127,7 +127,7 @@ namespace Samuil1337.CharacterSwapping.State
             var act = new RSeqAct_SwitchPlayerCharacter(Wi)
             {
                 CharacterName = NewCharacter.CharacterName,
-                PlayerStartPoint = Game.SpawnActor<PlayerStart>(Rpp.Location, Rpp.Rotation),
+                PlayerStartPoint = new(Rpp.Location, Rpp.Rotation),
             };
             Rpc.PrepareForPlayerSwitch(); // Resets HUD
             act.RestartPlayer(Rpc); // Performs switch of Pawn
@@ -138,7 +138,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         void PlayTransitionEffect(Vector3 location)
         {
-            var emitter = Game.SpawnActor<Emitter>(location)!;
+            var emitter = new Emitter(location)!;
             emitter.SetTemplate(_effectTemplate, bDestroyOnFinish: true);
             emitter.ParticleSystemComponent.SetScale(_effectScale);
         }
