@@ -26,6 +26,16 @@ namespace Samuil1337.CharacterSwapping.State
             {
                 raft.Player = rpp;
             }
+
+            foreach (var trap in Game.FindObjects<RThugTrap>())
+            {
+                if (!trap.IsValid || trap.IsClassDefaultObject)
+                {
+                    continue;
+                }
+
+                trap.Owner = rpp;
+            }
         }
     }
 }
