@@ -9,6 +9,31 @@ namespace Samuil1337.CharacterSwapping.Patches
     [ScriptComponent(AutoAttach = true)]
     sealed class FixJewelleryMissionComponent : ScriptComponent<RPawnVillain>
     {
+        const int MaxJewellery = 16;
+
+        [Redirect(typeof(RHudExtensionHealth), nameof(RHudExtensionHealth.Init))]
+        static bool RHudExtensionHealthInit(
+            RHudExtensionHealth self,
+            RPlayerController rpc,
+            FString extensionName,
+            FString extensionPath
+        )
+        {
+            var result = self.Init(rpc, extensionName, extensionPath);
+            if (!Game.GetGameInfo().IsChallengeMode())
+            {
+                var charType = CharacterRegistry.ByPawn(rpc.CombatPawn)!.BaseId;
+                if (charType is not PlayableCharacter.Catwoman)
+                {
+                    var pData = Game.GetPersistentData();
+                    var jewellery = Math.Min(pData.NumJewelleryFound, MaxJewellery);
+                    self.SetLootBar(jewellery, MaxJewellery);
+                }
+            }
+
+            return result;
+        }
+
         /// <summary>
         /// Overrides the function responsible for rendering things in Detective Mode.
         /// By default, only Catwoman can see enemies with jewellery which we change here.
