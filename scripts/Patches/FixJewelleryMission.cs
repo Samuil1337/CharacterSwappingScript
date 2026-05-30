@@ -2,7 +2,6 @@ using System.Numerics;
 using BmSDK;
 using BmSDK.BmGame;
 using BmSDK.Engine;
-using Samuil1337.CharacterSwapping.Data;
 
 namespace Samuil1337.CharacterSwapping.Patches
 {
@@ -20,10 +19,10 @@ namespace Samuil1337.CharacterSwapping.Patches
         )
         {
             var result = self.Init(rpc, extensionName, extensionPath);
+
             if (!Game.GetGameInfo().IsChallengeMode())
             {
-                var charType = CharacterRegistry.ByPawn(rpc.CombatPawn)!.BaseId;
-                if (charType is not PlayableCharacter.Catwoman)
+                if (rpc.CombatPawn is not RPawnPlayerCatwomanBase)
                 {
                     var pData = Game.GetPersistentData();
                     var jewellery = Math.Min(pData.NumJewelleryFound, MaxJewellery);
@@ -70,8 +69,7 @@ namespace Samuil1337.CharacterSwapping.Patches
             if (!Owner.bDiedAlready)
             {
                 var rpc = Game.GetPlayerController();
-                var charType = CharacterRegistry.ByPawn(rpc.CombatPawn)!.BaseId;
-                if (charType is not PlayableCharacter.Catwoman)
+                if (rpc.CombatPawn is not RPawnPlayerCatwomanBase)
                 {
                     var pData = Game.GetPersistentData();
                     if (Owner.JewelleryValue > 0 && !pData.FinishedCatwomanJewellery())
