@@ -10,6 +10,10 @@ namespace Samuil1337.CharacterSwapping.Patches
     {
         const int MaxJewellery = 16;
 
+        /// <summary>
+        /// Overrides the function responsible for initializing the health bar.
+        /// By default, the loot bar is only shown for Catwoman which we change here.
+        /// </summary>
         [Redirect(typeof(RHudExtensionHealth), nameof(RHudExtensionHealth.Init))]
         static bool RHudExtensionHealthInit(
             RHudExtensionHealth self,
