@@ -1,6 +1,10 @@
 name = "CharacterSwappingScript"
 description = "A mod allowing players to switch characters during gameplay"
 
+[preload]
+packages = ["Under_C2_Ch5"]
+keep_alive = ["FFX_Combat.Particles.NinjaSmokeBomb"]
+
 [config]
 spawn_effect_enabled = true # enable smoke particles on switch
 spawn_effect_scale = 1.0 # size of smoke cloud

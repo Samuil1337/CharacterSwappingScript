@@ -33,15 +33,12 @@ namespace Samuil1337.CharacterSwapping
 
         public override void Main()
         {
-            const string SpawnEffectPkg = "Under_C2_Ch5"; // TODO: Create SF package or load together with Robin
-            const string SpawnEffectPath = "FFX_Combat.Particles.NinjaSmokeBomb";
-
             // Load in spawn effect assets if enabled
             if (SwitchConfig.SpawnEffectEnabled)
             {
-                Game.LoadPackage(SpawnEffectPkg);
-                _spawnEffectTemplate = Game.FindObject<ParticleSystem>(SpawnEffectPath)!;
-                _spawnEffectTemplate.AddToRoot();
+                _spawnEffectTemplate = Game.FindObject<ParticleSystem>(
+                    "FFX_Combat.Particles.NinjaSmokeBomb"
+                );
             }
 
             // Reset timer
