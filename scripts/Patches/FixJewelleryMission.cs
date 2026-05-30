@@ -41,9 +41,22 @@ namespace Samuil1337.CharacterSwapping.Patches
         [ComponentRedirect(nameof(RPawnVillain.SetInXrayMode))]
         void SetInXrayMode(bool show, bool forceOff)
         {
-            Owner.ThermalSet = true;
             Owner.SetInXrayMode(show, forceOff);
-            Debug.Log($"Thermal: {Owner.ThermalSet}");
+
+            // Show CW jewellery indicator in other's Xray
+            if (show && !Owner.ThermalSet && !Owner.bDiedAlready)
+            {
+                if (!Game.GetPersistentData().FinishedCatwomanJewellery())
+                {
+                    var jewelParticles = Owner.CatVisionParticleFX;
+                    if (jewelParticles is not null)
+                    {
+                        jewelParticles.ActivateSystem();
+                        Owner.Mesh.DetachComponent(jewelParticles);
+                        Owner.Mesh.AttachComponent(jewelParticles, "Bip01_Spine1");
+                    }
+                }
+            }
         }
 
         /// <summary>
