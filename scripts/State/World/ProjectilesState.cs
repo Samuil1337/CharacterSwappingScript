@@ -2,7 +2,7 @@ using BmSDK.BmGame;
 
 namespace Samuil1337.CharacterSwapping.State
 {
-    sealed class GadgetWorldState : IStateComponent
+    sealed class ProjectilesState : IStateComponent
     {
         RProjectile[] _projectiles = [];
         RFloatingRaft[] _rafts = [];

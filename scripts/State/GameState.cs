@@ -16,19 +16,21 @@ namespace Samuil1337.CharacterSwapping.State
     /// </summary>
     sealed class GameState : IStateComponent
     {
-        readonly IStateComponent[] _playerComponents =
+        readonly IStateComponent[] _components =
         [
+            // Player state
             new MovementState(),
             new HealthState(),
-            new GadgetWorldState(),
             new ForensicDeviceState(),
+            // World state
+            new ProjectilesState(),
         ];
 
         internal GameState(SwitchContext ctx) => CaptureState(ctx);
 
         public void CaptureState(SwitchContext ctx)
         {
-            foreach (var component in _playerComponents)
+            foreach (var component in _components)
             {
                 component.CaptureState(ctx);
             }
@@ -36,7 +38,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         public void ApplyState(SwitchContext ctx)
         {
-            foreach (var component in _playerComponents)
+            foreach (var component in _components)
             {
                 component.ApplyState(ctx);
             }
