@@ -30,6 +30,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         public void CaptureState(SwitchContext ctx)
         {
+            ctx.Rpc.GetScriptComponent<PersistentInventory>()?.CaptureState();
             foreach (var component in _components)
             {
                 component.CaptureState(ctx);
@@ -38,6 +39,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         public void ApplyState(SwitchContext ctx)
         {
+            ctx.Rpc.GetScriptComponent<PersistentInventory>()?.ApplyState();
             foreach (var component in _components)
             {
                 component.ApplyState(ctx);
