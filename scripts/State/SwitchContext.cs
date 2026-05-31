@@ -15,7 +15,7 @@ namespace Samuil1337.CharacterSwapping.State
         static bool AreValid(params GameObject?[] objects) =>
             objects.All(obj => obj != null && obj.IsValid);
 
-        public RPlayerController Rpc { get; }
+        public RPlayerControllerCombat Rpc { get; }
         public RPawnPlayer Rpp { get; private set; }
         public WorldInfo Wi { get; } = Game.GetWorldInfo();
         public RGameInfo Rgi { get; } = Game.GetGameInfo();
@@ -37,7 +37,7 @@ namespace Samuil1337.CharacterSwapping.State
         /// May be null to disable.</param>
         /// <param name="effectScale">Scale of the effect if enabled</param>
         internal SwitchContext(
-            RPlayerController rpc,
+            RPlayerControllerCombat rpc,
             PlayableCharacter character,
             ParticleSystem? effectTemplate,
             float effectScale

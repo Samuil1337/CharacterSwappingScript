@@ -1,3 +1,4 @@
+using BmSDK.BmGame;
 using BmSDK.Engine;
 using Samuil1337.CharacterSwapping.Data;
 using Samuil1337.CharacterSwapping.State;
@@ -89,8 +90,14 @@ namespace Samuil1337.CharacterSwapping
 
             try
             {
+                // Get the right in-game controller
+                if (Game.GetPlayerController() is not RPlayerControllerCombat rpcc)
+                {
+                    return;
+                }
+
                 CurrentSwitchContext = new SwitchContext(
-                    Game.GetPlayerController(),
+                    rpcc,
                     character,
                     _spawnEffectTemplate,
                     SwitchConfig.SpawnEffectScale
