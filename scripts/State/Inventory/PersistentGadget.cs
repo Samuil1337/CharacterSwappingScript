@@ -44,73 +44,6 @@ namespace Samuil1337.CharacterSwapping.State
         void ApplyState(bool isOverworld);
     }
 
-    sealed class PersistentJammer(PersistentInventory inventory) : IPersistentGadget
-    {
-        public bool IsActive => GetJammer() is not null;
-        readonly PersistentInventory _inventory = inventory;
-        int _maxAmmo;
-        int _ammo;
-        float _replenishTime;
-        float _currentReplenishTime;
-
-        public void CaptureState()
-        {
-            var jammer = GetJammer()!;
-            _maxAmmo = jammer.MaxAmmo;
-            _ammo = jammer.Ammo;
-            _replenishTime = jammer.ReplenishTime;
-            _currentReplenishTime = jammer.CurrentRechargeTime;
-        }
-
-        public void OverworldTick(float dt)
-        {
-            if (_ammo >= _maxAmmo)
-            {
-                return;
-            }
-
-            _currentReplenishTime -= dt;
-
-            if (_currentReplenishTime <= 0)
-            {
-                _ammo++;
-                _currentReplenishTime = _replenishTime;
-            }
-        }
-
-        public void OnRoomChange() => RestockAmmo();
-
-        public void RestockAmmo() => _ammo = _maxAmmo;
-
-        public void ApplyState(bool isOverworld)
-        {
-            // Gadgets are instantiated with max ammo; nothing to do
-            if (_ammo >= _maxAmmo)
-            {
-                return;
-            }
-
-            var jammer = GetJammer()!;
-            jammer.Ammo = _ammo;
-            jammer.UpdateGadgetHUDParams();
-
-            if (isOverworld)
-            {
-                jammer.InterThrowRechargeTime = _replenishTime;
-                jammer.CurrentRechargeTime = _currentReplenishTime;
-                jammer.SetTickIsDisabled(false);
-                jammer.SetTimer(_currentReplenishTime, false, "ReplenishAmmo");
-            }
-            else
-            {
-                jammer.InterThrowRechargeTime = -1;
-                jammer.CurrentRechargeTime = 0;
-            }
-        }
-
-        RJammerGadget? GetJammer() => _inventory.Owner?.CombatPawn?.JammerGadget;
-    }
-
     abstract class PersistentGadget(PersistentInventory inventory) : IPersistentGadget
     {
         public bool IsActive => GetGadget() is not null;
@@ -143,5 +76,46 @@ namespace Samuil1337.CharacterSwapping.State
         public void OnRoomChange() => RestockAmmo();
 
         public void RestockAmmo() => Ammo = MaxAmmo;
+    }
+
+    sealed class PersistentJammer(PersistentInventory inventory) : PersistentGadget(inventory)
+    {
+        public override void CaptureState()
+        {
+            var jammer = (RJammerGadget)GetGadget()!;
+            MaxAmmo = jammer.MaxAmmo;
+            Ammo = jammer.Ammo;
+            ReplenishTime = jammer.ReplenishTime;
+            CurrentReplenishTime = jammer.CurrentRechargeTime;
+        }
+
+        public override void ApplyState(bool isOverworld)
+        {
+            // Gadgets are instantiated with max ammo; nothing to do
+            if (Ammo >= MaxAmmo)
+            {
+                return;
+            }
+
+            var jammer = (RJammerGadget)GetGadget()!;
+            jammer.Ammo = Ammo;
+            jammer.UpdateGadgetHUDParams();
+
+            if (isOverworld)
+            {
+                jammer.InterThrowRechargeTime = ReplenishTime;
+                jammer.CurrentRechargeTime = CurrentReplenishTime;
+                jammer.SetTickIsDisabled(false);
+                jammer.SetTimer(CurrentReplenishTime, false, "ReplenishAmmo");
+            }
+            else
+            {
+                jammer.InterThrowRechargeTime = -1;
+                jammer.CurrentRechargeTime = 0;
+            }
+        }
+
+        protected override RInventoryGadget? GetGadget() =>
+            Inventory.Owner?.CombatPawn?.JammerGadget;
     }
 }
