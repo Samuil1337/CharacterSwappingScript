@@ -44,18 +44,25 @@ namespace Samuil1337.CharacterSwapping.State
         void ApplyState(bool isOverworld);
     }
 
-    abstract class PersistentGadget(PersistentInventory inventory) : IPersistentGadget
+    abstract class PersistentGadget<TGadget>(PersistentInventory inventory) : IPersistentGadget
+        where TGadget : RInventoryGadget
     {
-        public bool IsActive => GetGadget() is not null;
         protected readonly PersistentInventory Inventory = inventory;
         protected int MaxAmmo { get; set; }
         protected int Ammo { get; set; }
         protected float ReplenishTime { get; set; }
         protected float CurrentReplenishTime { get; set; }
 
+        public bool IsActive => GetGadget() is not null;
+
+        /// <summary>
+        /// Gets the game's representation of the gadget.
+        /// May be null if the instance is not alive anymore.
+        /// </summary>
+        protected abstract TGadget? GetGadget();
+
         public abstract void CaptureState();
         public abstract void ApplyState(bool isOverworld);
-        protected abstract RInventoryGadget? GetGadget();
 
         public void OverworldTick(float dt)
         {
@@ -78,11 +85,14 @@ namespace Samuil1337.CharacterSwapping.State
         public void RestockAmmo() => Ammo = MaxAmmo;
     }
 
-    sealed class PersistentJammer(PersistentInventory inventory) : PersistentGadget(inventory)
+    sealed class PersistentJammer(PersistentInventory inventory)
+        : PersistentGadget<RJammerGadget>(inventory)
     {
+        protected override RJammerGadget? GetGadget() => Inventory.Owner?.CombatPawn?.JammerGadget;
+
         public override void CaptureState()
         {
-            var jammer = (RJammerGadget)GetGadget()!;
+            var jammer = GetGadget()!;
             MaxAmmo = jammer.MaxAmmo;
             Ammo = jammer.Ammo;
             ReplenishTime = jammer.ReplenishTime;
@@ -97,7 +107,7 @@ namespace Samuil1337.CharacterSwapping.State
                 return;
             }
 
-            var jammer = (RJammerGadget)GetGadget()!;
+            var jammer = GetGadget()!;
             jammer.Ammo = Ammo;
             jammer.UpdateGadgetHUDParams();
 
@@ -114,8 +124,5 @@ namespace Samuil1337.CharacterSwapping.State
                 jammer.CurrentRechargeTime = 0;
             }
         }
-
-        protected override RInventoryGadget? GetGadget() =>
-            Inventory.Owner?.CombatPawn?.JammerGadget;
     }
 }
