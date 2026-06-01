@@ -110,4 +110,38 @@ namespace Samuil1337.CharacterSwapping.State
 
         RJammerGadget? GetJammer() => _inventory.Owner?.CombatPawn?.JammerGadget;
     }
+
+    abstract class PersistentGadget(PersistentInventory inventory) : IPersistentGadget
+    {
+        public bool IsActive => GetGadget() is not null;
+        protected readonly PersistentInventory Inventory = inventory;
+        protected int MaxAmmo { get; set; }
+        protected int Ammo { get; set; }
+        protected float ReplenishTime { get; set; }
+        protected float CurrentReplenishTime { get; set; }
+
+        public abstract void CaptureState();
+        public abstract void ApplyState(bool isOverworld);
+        protected abstract RInventoryGadget? GetGadget();
+
+        public void OverworldTick(float dt)
+        {
+            if (Ammo >= MaxAmmo)
+            {
+                return;
+            }
+
+            CurrentReplenishTime -= dt;
+
+            if (CurrentReplenishTime <= 0)
+            {
+                Ammo++;
+                CurrentReplenishTime = ReplenishTime;
+            }
+        }
+
+        public void OnRoomChange() => RestockAmmo();
+
+        public void RestockAmmo() => Ammo = MaxAmmo;
+    }
 }
