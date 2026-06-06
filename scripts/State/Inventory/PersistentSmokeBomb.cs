@@ -5,6 +5,7 @@ namespace Samuil1337.CharacterSwapping.State
     sealed class PersistentSmokeBomb(PersistentInventory inventory) : IPersistentGadget
     {
         readonly PersistentInventory _inventory = inventory;
+        float _rechargeTime;
         float _currentRechargeTime;
         bool _isRecharging;
 
@@ -15,6 +16,7 @@ namespace Samuil1337.CharacterSwapping.State
         public void CaptureState()
         {
             var bomb = GetSmokeBomb()!;
+            _rechargeTime = bomb.InterThrowRechargeTime;
             _currentRechargeTime = bomb.CurrentRechargeTime;
             _isRecharging = bomb.bRecharging;
         }
@@ -41,8 +43,9 @@ namespace Samuil1337.CharacterSwapping.State
             }
 
             var bomb = GetSmokeBomb()!;
-            bomb.UpdateAllowRecharge();
+            bomb.InterThrowRechargeTime = _rechargeTime;
             bomb.CurrentRechargeTime = Math.Max(0f, _currentRechargeTime);
+            bomb.bRecharging = _isRecharging;
             bomb.UpdateGadgetHUDParams();
         }
     }
