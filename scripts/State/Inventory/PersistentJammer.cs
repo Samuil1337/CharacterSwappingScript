@@ -26,8 +26,6 @@ namespace Samuil1337.CharacterSwapping.State
 
             var jammer = GetGadget()!;
             jammer.Ammo = Ammo;
-            jammer.UpdateGadgetHUDParams();
-
             if (isOverworld)
             {
                 jammer.InterThrowRechargeTime = ReplenishTime;
@@ -40,6 +38,8 @@ namespace Samuil1337.CharacterSwapping.State
                 jammer.InterThrowRechargeTime = -1;
                 jammer.CurrentRechargeTime = 0;
             }
+
+            jammer.UpdateGadgetHUDParams();
         }
     }
 }
