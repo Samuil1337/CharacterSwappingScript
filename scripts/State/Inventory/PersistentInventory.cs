@@ -9,7 +9,7 @@ namespace Samuil1337.CharacterSwapping.State
 
         public PersistentInventory()
         {
-            _gadgets = [new PersistentJammer(this)];
+            _gadgets = [new PersistentJammer(this), new PersistentSmokeBomb(this)];
         }
 
         public void CaptureState()
