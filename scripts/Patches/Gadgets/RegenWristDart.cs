@@ -8,9 +8,12 @@ namespace Samuil1337.CharacterSwapping.Patches
     [ScriptComponent(AutoAttach = true)]
     sealed class RestockWristDartComponent : ScriptComponent<RNightwingWristDart>
     {
-        static readonly float s_rechargeTime = RProjectileGadgetBase.DefaultObject.ReplenishTime;
-        bool _replenishing;
-        float _cooldown;
+        public static readonly float RechargeTime = RProjectileGadgetBase
+            .DefaultObject
+            .ReplenishTime;
+
+        public bool IsRecharging { get; private set; }
+        public float CurrentRechargeTime { get; private set; }
 
         /// <summary>
         /// Overrides function responsible for shooting aimed darts.
@@ -40,6 +43,23 @@ namespace Samuil1337.CharacterSwapping.Patches
             }
         }
 
+        /// <summary>
+        /// Overrides the function called when a new map is loaded
+        /// (no matter if it's in the overworld or not). Here we schedule
+        /// regeneration if in the overworld.
+        /// </summary>
+        [ComponentRedirect(nameof(RNightwingWristDart.OnLevelChange))]
+        void OnLevelChange()
+        {
+            if (Game.GetGameRI().IsOverworldGameplay())
+            {
+                if (Owner.Ammo < Owner.MaxAmmo)
+                {
+                    ScheduleIncrementAmmo();
+                }
+            }
+        }
+
         void OnDecrementAmmo()
         {
             if (Game.GetGameRI().IsOverworldGameplay())
@@ -50,23 +70,21 @@ namespace Samuil1337.CharacterSwapping.Patches
 
         void ScheduleIncrementAmmo()
         {
-            if (_replenishing)
+            if (!IsRecharging)
             {
-                return;
+                CurrentRechargeTime = RechargeTime;
+                IsRecharging = true;
             }
-
-            _cooldown = s_rechargeTime;
-            _replenishing = true;
         }
 
         public override void OnTick()
         {
-            if (_replenishing)
+            if (IsRecharging)
             {
-                _cooldown -= Game.GetDeltaTime();
-                if (_cooldown <= 0)
+                CurrentRechargeTime -= Game.GetDeltaTime();
+                if (CurrentRechargeTime <= 0f)
                 {
-                    _replenishing = false;
+                    IsRecharging = false;
                     IncrementAmmo();
                 }
             }
@@ -113,23 +131,6 @@ namespace Samuil1337.CharacterSwapping.Patches
             Owner.Ammo = Owner.MaxAmmo;
             Owner.NumHeadShotsInRound = 0;
             Owner.UpdateGadgetHUDParams();
-        }
-
-        /// <summary>
-        /// Overrides the function called when a new map is loaded
-        /// (no matter if it's in the overworld or not). Here we schedule
-        /// regeneration if in the overworld.
-        /// </summary>
-        [ComponentRedirect(nameof(RNightwingWristDart.OnLevelChange))]
-        void OnLevelChange()
-        {
-            if (Game.GetGameRI().IsOverworldGameplay())
-            {
-                if (Owner.Ammo < Owner.MaxAmmo)
-                {
-                    ScheduleIncrementAmmo();
-                }
-            }
         }
     }
 }
