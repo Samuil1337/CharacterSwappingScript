@@ -1,70 +1,45 @@
+using BmSDK.BmGame;
 using BmSDK.BmScript;
 
 namespace Samuil1337.CharacterSwapping.Patches
 {
     /// <summary>
-    /// Challenge Map Robin doesn't override the functions which manage saved armor.
-    /// This makes them noop, breaking health transfer and regeneration logic.
-    /// Therefore, we override the behavior ourselves.
+    /// Challenge Map Robin and Nightwing don't override the functions which manage saved armor.
+    /// This makes them noop, breaking health transfer and regeneration logic. HQR Robin overrides
+    /// the functions which manage saved armor. However, in contrast to Batman, he stores the data
+    /// in ProgressCharacterStatus. To prevent inconsistencies between the characters,
+    /// we override the behavior ourselves.
     /// </summary>
-    [ScriptComponent(AutoAttach = true)]
-    sealed class ForceRobinUseSavedArmor : ScriptComponent<RPawnPlayerRobin>
+    static class ForceUseSavedArmor
     {
-        [ComponentRedirect(nameof(RPawnPlayerRobin.GetPersistentMeleeArmour))]
-        int GetPersistentMeleeArmour() => Game.GetPersistentData().MeleeArmour;
+        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.GetPersistentMeleeArmour))]
+        [Redirect(typeof(RPawnPlayerRobinStoryDLC), nameof(RPawnPlayer.GetPersistentMeleeArmour))]
+        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.GetPersistentMeleeArmour))]
+        static int GetPersistentMeleeArmour(RPawnPlayer self) =>
+            Game.GetPersistentData().MeleeArmour;
 
-        [ComponentRedirect(nameof(RPawnPlayerRobin.GetPersistentBallisticArmour))]
-        int GetPersistentBallisticArmour() => Game.GetPersistentData().BallisticArmour;
+        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.GetPersistentBallisticArmour))]
+        [Redirect(
+            typeof(RPawnPlayerRobinStoryDLC),
+            nameof(RPawnPlayer.GetPersistentBallisticArmour)
+        )]
+        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.GetPersistentBallisticArmour))]
+        static int GetPersistentBallisticArmour(RPawnPlayer self) =>
+            Game.GetPersistentData().BallisticArmour;
 
-        [ComponentRedirect(nameof(RPawnPlayerRobin.SetPersistentMeleeArmour))]
-        void SetPersistentMeleeArmour(int armor) => Game.GetPersistentData().MeleeArmour = armor;
+        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.SetPersistentMeleeArmour))]
+        [Redirect(typeof(RPawnPlayerRobinStoryDLC), nameof(RPawnPlayer.SetPersistentMeleeArmour))]
+        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.SetPersistentMeleeArmour))]
+        static void SetPersistentMeleeArmour(RPawnPlayer self, int armor) =>
+            Game.GetPersistentData().MeleeArmour = armor;
 
-        [ComponentRedirect(nameof(RPawnPlayerRobin.SetPersistentBallisticArmour))]
-        void SetPersistentBallisticArmour(int armor) =>
-            Game.GetPersistentData().BallisticArmour = armor;
-    }
-
-    /// <summary>
-    /// HQR Robin overrides the functions which manage saved armor. However, in contrast
-    /// to Batman, he stores the data in ProgressCharacterStatus. To match the other characters
-    /// and prevent inconsistencies we override this behavior ourselves.
-    /// </summary>
-    [ScriptComponent(AutoAttach = true)]
-    sealed class ForceDlcRobinUseSavedArmor : ScriptComponent<RPawnPlayerRobinStoryDLC>
-    {
-        [ComponentRedirect(nameof(RPawnPlayerRobinStoryDLC.GetPersistentMeleeArmour))]
-        int GetPersistentMeleeArmour() => Game.GetPersistentData().MeleeArmour;
-
-        [ComponentRedirect(nameof(RPawnPlayerRobinStoryDLC.GetPersistentBallisticArmour))]
-        int GetPersistentBallisticArmour() => Game.GetPersistentData().BallisticArmour;
-
-        [ComponentRedirect(nameof(RPawnPlayerRobinStoryDLC.SetPersistentMeleeArmour))]
-        void SetPersistentMeleeArmour(int armor) => Game.GetPersistentData().MeleeArmour = armor;
-
-        [ComponentRedirect(nameof(RPawnPlayerRobinStoryDLC.SetPersistentBallisticArmour))]
-        void SetPersistentBallisticArmour(int armor) =>
-            Game.GetPersistentData().BallisticArmour = armor;
-    }
-
-    /// <summary>
-    /// Nightwing doesn't override the functions which manage saved armor.
-    /// This makes them noop, breaking health transfer and regeneration logic.
-    /// Therefore, we override the behavior ourselves.
-    /// </summary>
-    [ScriptComponent(AutoAttach = true)]
-    sealed class ForceNightwingUseSavedArmor : ScriptComponent<RPawnPlayerNightwing>
-    {
-        [ComponentRedirect(nameof(RPawnPlayerNightwing.GetPersistentMeleeArmour))]
-        int GetPersistentMeleeArmour() => Game.GetPersistentData().MeleeArmour;
-
-        [ComponentRedirect(nameof(RPawnPlayerNightwing.GetPersistentBallisticArmour))]
-        int GetPersistentBallisticArmour() => Game.GetPersistentData().BallisticArmour;
-
-        [ComponentRedirect(nameof(RPawnPlayerNightwing.SetPersistentMeleeArmour))]
-        void SetPersistentMeleeArmour(int armor) => Game.GetPersistentData().MeleeArmour = armor;
-
-        [ComponentRedirect(nameof(RPawnPlayerNightwing.SetPersistentBallisticArmour))]
-        void SetPersistentBallisticArmour(int armor) =>
+        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.SetPersistentBallisticArmour))]
+        [Redirect(
+            typeof(RPawnPlayerRobinStoryDLC),
+            nameof(RPawnPlayer.SetPersistentBallisticArmour)
+        )]
+        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.SetPersistentBallisticArmour))]
+        static void SetPersistentBallisticArmour(RPawnPlayer self, int armor) =>
             Game.GetPersistentData().BallisticArmour = armor;
     }
 }
