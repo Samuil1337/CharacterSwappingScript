@@ -1,3 +1,6 @@
+using BmSDK.BmGame;
+using BmSDK.BmScript;
+
 namespace Samuil1337.CharacterSwapping.State
 {
     /// <summary>
@@ -39,11 +42,26 @@ namespace Samuil1337.CharacterSwapping.State
 
         public void ApplyState(SwitchContext ctx)
         {
-            ctx.Rpc.GetScriptComponent<PersistentInventory>()?.ApplyState();
             foreach (var component in _components)
             {
                 component.ApplyState(ctx);
             }
         }
+
+        [Redirect(typeof(RPawnPlayer), nameof(RPawnPlayer.AddDefaultInventoryAfterInit))]
+        [Redirect(typeof(RPawnPlayerBm), nameof(RPawnPlayerBm.AddDefaultInventoryAfterInit))]
+        static void AddDefaultInventoryAfterInit(RPawnPlayer self)
+        {
+            self.AddDefaultInventoryAfterInit();
+            self.PlayerController?.GetScriptComponent<PersistentInventory>()?.ApplyState();
+        }
+
+        /*[Redirect(typeof(RInventoryGadget), nameof(RInventoryGadget.UpdateGadgetHUDParams))]
+        static void RInventoryGadgetUpdateGadgetHUDParams(RInventoryGadget self)
+        {
+            self.CurrHuDAmmo = -1;
+            self.CurrHuDRecharge = -1;
+            self.UpdateGadgetHUDParams();
+        }*/
     }
 }
