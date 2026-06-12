@@ -12,34 +12,28 @@ namespace Samuil1337.CharacterSwapping.Patches
     /// </summary>
     static class ForceUseSavedArmor
     {
-        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.GetPersistentMeleeArmour))]
-        [Redirect(typeof(RPawnPlayerRobinStoryDLC), nameof(RPawnPlayer.GetPersistentMeleeArmour))]
-        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.GetPersistentMeleeArmour))]
-        static int GetPersistentMeleeArmour(RPawnPlayer self) =>
+        [Redirect(typeof(RPawnPlayerRobin), "GetPersistentMeleeArmour")]
+        [Redirect(typeof(RPawnPlayerRobinStoryDLC), "GetPersistentMeleeArmour")]
+        [Redirect(typeof(RPawnPlayerNightwing), "GetPersistentMeleeArmour")]
+        public static int GetPersistentMeleeArmour(RPawnPlayer self) =>
             Game.GetPersistentData().MeleeArmour;
 
-        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.GetPersistentBallisticArmour))]
-        [Redirect(
-            typeof(RPawnPlayerRobinStoryDLC),
-            nameof(RPawnPlayer.GetPersistentBallisticArmour)
-        )]
-        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.GetPersistentBallisticArmour))]
-        static int GetPersistentBallisticArmour(RPawnPlayer self) =>
+        [Redirect(typeof(RPawnPlayerRobin), "GetPersistentBallisticArmour")]
+        [Redirect(typeof(RPawnPlayerRobinStoryDLC), "GetPersistentBallisticArmour")]
+        [Redirect(typeof(RPawnPlayerNightwing), "GetPersistentBallisticArmour")]
+        public static int GetPersistentBallisticArmour(RPawnPlayer self) =>
             Game.GetPersistentData().BallisticArmour;
 
-        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.SetPersistentMeleeArmour))]
-        [Redirect(typeof(RPawnPlayerRobinStoryDLC), nameof(RPawnPlayer.SetPersistentMeleeArmour))]
-        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.SetPersistentMeleeArmour))]
-        static void SetPersistentMeleeArmour(RPawnPlayer self, int armor) =>
+        [Redirect(typeof(RPawnPlayerRobin), "SetPersistentMeleeArmour")]
+        [Redirect(typeof(RPawnPlayerRobinStoryDLC), "SetPersistentMeleeArmour")]
+        [Redirect(typeof(RPawnPlayerNightwing), "SetPersistentMeleeArmour")]
+        public static void SetPersistentMeleeArmour(RPawnPlayer self, int armor) =>
             Game.GetPersistentData().MeleeArmour = armor;
 
-        [Redirect(typeof(RPawnPlayerRobin), nameof(RPawnPlayer.SetPersistentBallisticArmour))]
-        [Redirect(
-            typeof(RPawnPlayerRobinStoryDLC),
-            nameof(RPawnPlayer.SetPersistentBallisticArmour)
-        )]
-        [Redirect(typeof(RPawnPlayerNightwing), nameof(RPawnPlayer.SetPersistentBallisticArmour))]
-        static void SetPersistentBallisticArmour(RPawnPlayer self, int armor) =>
+        [Redirect(typeof(RPawnPlayerRobin), "SetPersistentBallisticArmour")]
+        [Redirect(typeof(RPawnPlayerRobinStoryDLC), "SetPersistentBallisticArmour")]
+        [Redirect(typeof(RPawnPlayerNightwing), "SetPersistentBallisticArmour")]
+        public static void SetPersistentBallisticArmour(RPawnPlayer self, int armor) =>
             Game.GetPersistentData().BallisticArmour = armor;
     }
 }
