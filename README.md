@@ -1,15 +1,15 @@
 # CharacterSwappingScript
 Adds the ability to switch between playable characters during gameplay in Batman: Arkham City.
-Based on [BmSDK](https://bmsdk.dev), a scripthook for Arkham City.
+Based on [BmSDK](https://bmsdk.dev), a scripthook for the Arkham games.
 
 ## ⚠️ Notice: In active development
 _This mod is currently under construction! Some functionality might be unstable or missing entirely._
 
 ## How to install
-1. Get the [BmSDK](https://github.com/Team-BmSDK/BmSDK-AC#getting-started)
+1. Get the [BmSDK](https://github.com/Team-BmSDK/BmSDK-AC#-getting-started)
 2. Clone the repo into `%GameDir%\BmGame\Mods` by either:
-   - using `git clone https://github.com/Samuil1337/CharacterSwappingScript.git` in the target directory
-   - or downloading and extracting [the latest ZIP](https://github.com/Samuil1337/CharacterSwappingScript/archive/refs/heads/main.zip) in the target directory
+   - downloading and extracting [the latest ZIP](https://github.com/Samuil1337/CharacterSwappingScript/archive/refs/heads/main.zip) in the target directory
+   - OR using `git clone https://github.com/Samuil1337/CharacterSwappingScript.git` in the target directory
 3. Enjoy!
 
 ## How to use
